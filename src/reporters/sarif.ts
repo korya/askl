@@ -11,8 +11,8 @@ export function reportSarif(diagnostics: Diagnostic[], version: string): string 
         {
           tool: {
             driver: {
-              name: "agent-skills-lint",
-              informationUri: "https://github.com/korya/agent-skills-lint",
+              name: "askl",
+              informationUri: "https://github.com/korya/askl",
               version,
               rules: ruleIds.map((id) => ({ id })),
             },

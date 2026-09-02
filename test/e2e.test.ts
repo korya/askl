@@ -371,7 +371,7 @@ describe("bin shim (src/cli.ts)", () => {
   it("reports errors on stderr and exits 2", async () => {
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     expect(await runShim([fx("no/such/path")])).toBe(2);
-    expect(errSpy.mock.calls[0]?.[0]).toContain("agent-skills-lint:");
+    expect(errSpy.mock.calls[0]?.[0]).toContain("askl:");
     errSpy.mockRestore();
   });
 });

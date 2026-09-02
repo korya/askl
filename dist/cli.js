@@ -892,7 +892,7 @@ function reportGithub(diagnostics, dialectIds) {
   }
   const errors = diagnostics.filter((d) => d.severity === "error").length;
   out.push(
-    `agent-skills-lint \xB7 dialects: ${dialectIds.join(", ")} \xB7 ${errors} errors, ${diagnostics.length - errors} warnings`
+    `askl \xB7 dialects: ${dialectIds.join(", ")} \xB7 ${errors} errors, ${diagnostics.length - errors} warnings`
   );
   return out.join("\n");
 }
@@ -922,8 +922,8 @@ function reportSarif(diagnostics, version) {
         {
           tool: {
             driver: {
-              name: "agent-skills-lint",
-              informationUri: "https://github.com/korya/agent-skills-lint",
+              name: "askl",
+              informationUri: "https://github.com/korya/askl",
               version,
               rules: ruleIds.map((id) => ({ id }))
             }
@@ -956,7 +956,7 @@ function reportSarif(diagnostics, version) {
 import pc from "picocolors";
 function reportText(diagnostics, dialectIds) {
   const out = [];
-  out.push(`agent-skills-lint \xB7 dialects: ${dialectIds.join(", ")}`);
+  out.push(`askl \xB7 dialects: ${dialectIds.join(", ")}`);
   out.push("");
   let file = "";
   for (const d of diagnostics) {
@@ -978,10 +978,10 @@ function reportText(diagnostics, dialectIds) {
 }
 
 // src/main.ts
-var VERSION = "0.1.0";
-var HELP = `agent-skills-lint \u2014 deterministic linter for agent skills and plugins
+var VERSION = "0.2.0";
+var HELP = `askl \u2014 deterministic linter for agent skills and plugins
 
-Usage: agent-skills-lint [options] [paths...]
+Usage: askl [options] [paths...]
 
 Options:
   --dialect <names>   comma-separated dialects to lint against
@@ -994,11 +994,11 @@ Options:
   --help              show this help
 
 With no options, paths are auto-detected (skill, plugin, or marketplace) and
-linted against the spec dialects. Optional config: agent-skills-lint.config.json
+linted against the spec dialects. Optional config: askl.config.json
 with { "dialects": [...], "ignore": [...], "pedantic": true }.`;
 function loadConfig() {
   try {
-    return JSON.parse(readFileSync3(join4(process.cwd(), "agent-skills-lint.config.json"), "utf8"));
+    return JSON.parse(readFileSync3(join4(process.cwd(), "askl.config.json"), "utf8"));
   } catch {
     return {};
   }
@@ -1069,6 +1069,6 @@ function main(argv) {
 try {
   process.exitCode = main(process.argv.slice(2));
 } catch (err) {
-  console.error(`agent-skills-lint: ${err.message}`);
+  console.error(`askl: ${err.message}`);
   process.exitCode = 2;
 }

@@ -1,4 +1,4 @@
-# agent-skills-lint [![CI](https://github.com/korya/agent-skills-lint/actions/workflows/ci.yml/badge.svg)](https://github.com/korya/agent-skills-lint/actions/workflows/ci.yml) [![Marketplace](https://img.shields.io/github/v/release/korya/agent-skills-lint?label=marketplace&logo=github&color=2ea44f)](https://github.com/marketplace/actions/agent-skills-lint)
+# askl [![CI](https://github.com/korya/askl/actions/workflows/ci.yml/badge.svg)](https://github.com/korya/askl/actions/workflows/ci.yml) [![Marketplace](https://img.shields.io/github/v/release/korya/askl?label=marketplace&logo=github&color=2ea44f)](https://github.com/marketplace/actions/askl)
 
 Deterministic linter for [agent skills](https://agentskills.io/specification) and
 [agent plugins](https://agent-plugins.org/). Verifies compliance with the open specs and
@@ -10,7 +10,7 @@ No LLM, no network at lint time, no configuration required.
 ## GitHub Action (primary use)
 
 ```yaml
-- uses: korya/agent-skills-lint@v0
+- uses: korya/askl@v0
 ```
 
 That's it. The action detects what your repo is (a skill, a plugin, a marketplace of
@@ -21,7 +21,7 @@ job on errors.
 Optional inputs mirror the CLI flags:
 
 ```yaml
-- uses: korya/agent-skills-lint@v0
+- uses: korya/askl@v0
   with:
     path: plugins/my-plugin
     dialect: spec,claude,codex   # pin targets explicitly
@@ -32,8 +32,8 @@ Optional inputs mirror the CLI flags:
 ## CLI (secondary use)
 
 ```console
-$ npx @korya/agent-skills-lint
-agent-skills-lint · dialects: agentskills@1.0.0, agent-plugins@1.0.0, claude-code@2026-09
+$ npx @korya/askl
+askl · dialects: agentskills@1.0.0, agent-plugins@1.0.0, claude-code@2026-09
 
 skills/examine/SKILL.md
   ✖ [agentskills@1.0.0, claude-code@2026-09] skill/frontmatter-schema  frontmatter is not valid YAML: Nested mappings are not allowed in compact mappings (3:14)
@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: korya/agent-skills-lint@v0
+      - uses: korya/askl@v0
 ```
 
 Violations show up as inline annotations on the PR diff; the job fails on errors and
@@ -65,8 +65,8 @@ passes on warnings (add `strict: "true"` to fail on warnings too).
 ### Local check while writing a skill
 
 ```console
-$ npx @korya/agent-skills-lint skills/my-skill
-agent-skills-lint · dialects: agentskills@1.0.0, agent-plugins@1.0.0
+$ npx @korya/askl skills/my-skill
+askl · dialects: agentskills@1.0.0, agent-plugins@1.0.0
 
 skills/my-skill/SKILL.md
   ✖ [agentskills@1.0.0] skill/name-format  name `My_Skill` is invalid: only lowercase letters, digits and single hyphens are allowed (2:7)
@@ -80,8 +80,8 @@ whole marketplace repo — detection is automatic.
 ### Cross-runtime compatibility: "I built this for Claude Code — will Codex take it?"
 
 ```console
-$ npx @korya/agent-skills-lint --dialect claude,codex .
-agent-skills-lint · dialects: claude-code@2026-09, codex@2026-09
+$ npx @korya/askl --dialect claude,codex .
+askl · dialects: claude-code@2026-09, codex@2026-09
 
 skills/easy-speak/SKILL.md
   ⚠ [codex@2026-09] codex/skill-body-budget  SKILL.md is 11913 bytes — Codex silently truncates skill contents at 8000 bytes on activation; instructions past the cut are lost
@@ -100,7 +100,7 @@ When layouts genuinely diverge, the union run tells you how to satisfy both side
 ### Pre-publish audit before listing in a marketplace
 
 ```console
-$ npx @korya/agent-skills-lint --strict --pedantic .
+$ npx @korya/askl --strict --pedantic .
 ```
 
 `--strict` turns every silent degradation (truncated descriptions, oversized bodies)
@@ -115,14 +115,14 @@ have drifted from their plugin originals.
 }
 ```
 
-With `agent-skills-lint.config.json` committed, a linter update can never redden your
+With `askl.config.json` committed, a linter update can never redden your
 pipeline — released dialect versions are frozen, and unpinned runs always print which
 versions they resolved to.
 
 ### SARIF into GitHub code scanning
 
 ```yaml
-      - run: npx @korya/agent-skills-lint --format sarif . > results.sarif
+      - run: npx @korya/askl --format sarif . > results.sarif
       - uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results.sarif
@@ -142,7 +142,7 @@ data file:
 
 Vendor facts are verified against the runtime source and live behavior, and cited in
 each dialect file. Released dialect versions are frozen — pin them in
-`agent-skills-lint.config.json` and results never change under you:
+`askl.config.json` and results never change under you:
 
 ```json
 {

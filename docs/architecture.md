@@ -1,4 +1,4 @@
-# agent-skills-lint — Architecture
+# askl — Architecture
 
 Companion to [product.md](product.md); requirement IDs (`[A3]`, `[B7]`, …) refer to it.
 
@@ -187,7 +187,7 @@ suppression — and is capped at five keys by policy `[B6]`:
 }
 ```
 
-Distribution: published to npm, so `npx agent-skills-lint` covers the ad-hoc local use
+Distribution: published to npm, so `npx askl` covers the ad-hoc local use
 case with no prior installation. The GitHub Action is the same binary with defaults
 turned up: no inputs → detection,
 SARIF-based PR annotations, fail on errors. Every CLI flag maps to an Action input of
@@ -220,7 +220,7 @@ The modularity claim, stated as procedures:
 ## Repository layout
 
 ```
-agent-skills-lint/
+askl/
 ├── src/
 │   ├── engine/            # detect, parse once, run dialects, collect
 │   ├── rules/             # skill/* · plugin/* · conflict/* · vendor-only

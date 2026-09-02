@@ -1,4 +1,4 @@
-# agent-skills-lint — contributor guide
+# askl — contributor guide
 
 Deterministic linter for agent skills and plugins. What it must do:
 [docs/product.md](docs/product.md) (requirements have stable IDs — cite them).

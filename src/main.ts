@@ -10,11 +10,11 @@ import { reportJson } from "./reporters/json.js";
 import { reportSarif } from "./reporters/sarif.js";
 import { reportText } from "./reporters/text.js";
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.0";
 
-const HELP = `agent-skills-lint — deterministic linter for agent skills and plugins
+const HELP = `askl — deterministic linter for agent skills and plugins
 
-Usage: agent-skills-lint [options] [paths...]
+Usage: askl [options] [paths...]
 
 Options:
   --dialect <names>   comma-separated dialects to lint against
@@ -27,7 +27,7 @@ Options:
   --help              show this help
 
 With no options, paths are auto-detected (skill, plugin, or marketplace) and
-linted against the spec dialects. Optional config: agent-skills-lint.config.json
+linted against the spec dialects. Optional config: askl.config.json
 with { "dialects": [...], "ignore": [...], "pedantic": true }.`;
 
 interface Config {
@@ -38,7 +38,7 @@ interface Config {
 
 function loadConfig(): Config {
   try {
-    return JSON.parse(readFileSync(join(process.cwd(), "agent-skills-lint.config.json"), "utf8"));
+    return JSON.parse(readFileSync(join(process.cwd(), "askl.config.json"), "utf8"));
   } catch {
     return {};
   }

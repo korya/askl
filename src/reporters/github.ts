@@ -21,7 +21,7 @@ export function reportGithub(diagnostics: Diagnostic[], dialectIds: string[]): s
   }
   const errors = diagnostics.filter((d) => d.severity === "error").length;
   out.push(
-    `agent-skills-lint · dialects: ${dialectIds.join(", ")} · ` +
+    `askl · dialects: ${dialectIds.join(", ")} · ` +
       `${errors} errors, ${diagnostics.length - errors} warnings`,
   );
   return out.join("\n");

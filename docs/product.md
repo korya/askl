@@ -1,4 +1,4 @@
-# agent-skills-lint — Product
+# askl — Product
 
 ## Goal
 
