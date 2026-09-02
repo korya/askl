@@ -1,11 +1,12 @@
 # askl [![CI](https://github.com/korya/askl/actions/workflows/ci.yml/badge.svg)](https://github.com/korya/askl/actions/workflows/ci.yml) [![Marketplace](https://img.shields.io/github/v/release/korya/askl?label=marketplace&logo=github&color=2ea44f)](https://github.com/marketplace/actions/askl)
 
-Deterministic linter for [agent skills](https://agentskills.io/specification) and
-[agent plugins](https://agent-plugins.org/). Verifies compliance with the open specs and
-with what specific runtimes actually enforce — Claude Code and Codex — so you catch
-incompatibilities in CI, before your users do.
+askl is a deterministic linter for [agent skills](https://agentskills.io/specification)
+and [agent plugins](https://agent-plugins.org/). It verifies compliance with the open
+specs and with what specific runtimes (Claude Code, Codex) actually enforce, so you
+catch incompatibilities in CI before your users do.
 
-No LLM, no network at lint time, no configuration required.
+It is plain static analysis: it never calls a model or the network at lint time, and it
+works without a config file.
 
 ## GitHub Action
 
@@ -48,9 +49,9 @@ The CLI flags and the Action inputs share names and meaning:
 | Option | What it does |
 |---|---|
 | `--dialect <names>` | Which compliance targets to lint against: `spec`, `agentskills`, `agent-plugins`, `claude`, `codex`, `all`, or a pinned `name@version` (comma-separated). Selecting several means your files must satisfy each of them. Default: the spec dialects, plus Claude Code / Codex automatically when your repo layout shows you target them. |
-| `--strict` | Treat warnings as errors (exit 1). Warnings normally flag silent degradation — a description a runtime truncates, an oversized body; strict mode makes them block. |
+| `--strict` | Treat warnings as errors (exit 1). Warnings normally flag silent degradation, such as a description a runtime truncates or an oversized body; strict mode makes those block. |
 | `--pedantic` | Enable opinion-tier checks that are off by default, such as `.agents/skills` copies drifting out of sync with their plugin originals. |
-| `--format <name>` | Output format: `text` (default in a terminal), `json` (machine-readable), `sarif` (GitHub code scanning), `github` (inline workflow annotations — the default inside GitHub Actions). |
+| `--format <name>` | Output format: `text` (default in a terminal), `json` (machine-readable), `sarif` (GitHub code scanning), `github` (inline workflow annotations; the default inside GitHub Actions). |
 
 ## Examples
 
@@ -83,10 +84,10 @@ skills/my-skill/SKILL.md
 1 error · 0 warnings
 ```
 
-Works on any target shape: a single `SKILL.md`, a directory of skills, a plugin, or a
-whole marketplace repo — detection is automatic.
+askl works on any target shape: a single `SKILL.md`, a directory of skills, a plugin,
+or a whole marketplace repo. Detection is automatic.
 
-### Cross-runtime compatibility: "I built this for Claude Code — will Codex take it?"
+### Cross-runtime compatibility: "I built this for Claude Code. Will Codex take it?"
 
 ```console
 $ npx @korya/askl --dialect claude,codex .
@@ -124,9 +125,9 @@ have drifted from their plugin originals.
 }
 ```
 
-With `askl.config.json` committed, a linter update can never redden your
-pipeline — released dialect versions are frozen, and unpinned runs always print which
-versions they resolved to.
+With `askl.config.json` committed, a linter update can never redden your pipeline:
+released dialect versions are frozen, and unpinned runs always print which versions
+they resolved to.
 
 ### SARIF into GitHub code scanning
 
@@ -150,8 +151,8 @@ data file:
 | `codex@2026-09` | SKILL.md ≤ 8000 **bytes** (silently truncated on activation above that), description truncation at 1024 chars, skills-listing budget, `.agents/skills` sync (pedantic) |
 
 Vendor facts are verified against the runtime source and live behavior, and cited in
-each dialect file. Released dialect versions are frozen — pin them in
-`askl.config.json` and results never change under you:
+each dialect file. Released dialect versions are frozen; pin them in `askl.config.json`
+and results never change under you:
 
 ```json
 {
