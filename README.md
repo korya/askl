@@ -12,7 +12,7 @@ No LLM, no network at lint time, no configuration required.
 ## GitHub Action (primary use)
 
 ```yaml
-- uses: korya/agent-skills-lint@v1
+- uses: korya/agent-skills-lint@v0
 ```
 
 That's it. The action detects what your repo is (a skill, a plugin, a marketplace of
@@ -23,7 +23,7 @@ job on errors.
 Optional inputs mirror the CLI flags:
 
 ```yaml
-- uses: korya/agent-skills-lint@v1
+- uses: korya/agent-skills-lint@v0
   with:
     path: plugins/my-plugin
     dialect: spec,claude,codex   # pin targets explicitly
