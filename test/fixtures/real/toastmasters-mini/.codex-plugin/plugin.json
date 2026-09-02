@@ -1,0 +1,6 @@
+{
+  "name": "toastmasters",
+  "description": "Manage your Toastmasters club participation on easy-Speak: check and set meeting attendance, claim roles, and see when you are next speaking. Drives the easy-Speak web UI in a browser, since the site has no API. Requires browser automation to be available to the agent — see the skill's Requirements section.",
+  "version": "0.1.0",
+  "skills": "./skills/"
+}

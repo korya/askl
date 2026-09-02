@@ -1,0 +1,98 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { parseArgs } from "node:util";
+import type { Diagnostic } from "./diagnostic.js";
+import { defaultSelection, resolveSelection } from "./dialects/registry.js";
+import { detectTargets } from "./engine/detect.js";
+import { run } from "./engine/run.js";
+import { reportJson } from "./reporters/json.js";
+import { reportSarif } from "./reporters/sarif.js";
+import { reportText } from "./reporters/text.js";
+
+const VERSION = "0.1.0";
+
+const HELP = `agent-skills-lint — deterministic linter for agent skills and plugins
+
+Usage: agent-skills-lint [options] [paths...]
+
+Options:
+  --dialect <names>   comma-separated dialects to lint against
+                      (spec, agentskills, agent-plugins, all, or name@version)
+  --strict            treat warnings as errors
+  --pedantic          enable opinion-tier warnings
+  --format <name>     output format: text | json | sarif (default: text)
+  --version           print version
+  --help              show this help
+
+With no options, paths are auto-detected (skill, plugin, or marketplace) and
+linted against the spec dialects. Optional config: agent-skills-lint.config.json
+with { "dialects": [...], "ignore": [...], "pedantic": true }.`;
+
+interface Config {
+  dialects?: string[];
+  ignore?: string[];
+  pedantic?: boolean;
+}
+
+function loadConfig(): Config {
+  try {
+    return JSON.parse(readFileSync(join(process.cwd(), "agent-skills-lint.config.json"), "utf8"));
+  } catch {
+    return {};
+  }
+}
+
+export function main(argv: string[]): number {
+  const { values, positionals } = parseArgs({
+    args: argv,
+    allowPositionals: true,
+    options: {
+      dialect: { type: "string", multiple: true },
+      strict: { type: "boolean", default: false },
+      pedantic: { type: "boolean", default: false },
+      format: { type: "string", default: "text" },
+      version: { type: "boolean", default: false },
+      help: { type: "boolean", default: false },
+    },
+  });
+
+  if (values.help) {
+    console.log(HELP);
+    return 0;
+  }
+  if (values.version) {
+    console.log(VERSION);
+    return 0;
+  }
+
+  const config = loadConfig();
+  const selection = values.dialect?.flatMap((d) => d.split(",")) ?? config.dialects;
+  const dialectIds = selection ? resolveSelection(selection) : defaultSelection();
+
+  const paths = positionals.length > 0 ? positionals : ["."];
+  const targets = paths.flatMap((p) => detectTargets(p));
+
+  let diagnostics = run(targets, dialectIds);
+
+  const ignored = new Set(config.ignore ?? []);
+  diagnostics = diagnostics.filter((d) => !ignored.has(d.rule));
+  if (values.strict) {
+    diagnostics = diagnostics.map(
+      (d): Diagnostic => (d.severity === "warn" ? { ...d, severity: "error" } : d),
+    );
+  }
+
+  const format = values.format;
+  if (format === "json") {
+    console.log(reportJson(diagnostics, dialectIds));
+  } else if (format === "sarif") {
+    console.log(reportSarif(diagnostics, VERSION));
+  } else if (format === "text") {
+    console.log(reportText(diagnostics, dialectIds));
+  } else {
+    console.error(`unknown format \`${format}\` (expected text, json, or sarif)`);
+    return 2;
+  }
+
+  return diagnostics.some((d) => d.severity === "error") ? 1 : 0;
+}

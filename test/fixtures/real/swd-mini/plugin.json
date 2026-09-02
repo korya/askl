@@ -1,0 +1,21 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "swd",
+  "version": "0.7.0",
+  "description": "Software development skills: product specs, deep planning, root-cause analysis, agent-oriented repo docs, spec-aware rebasing, PR review, PR submission, review revision, and end-user e2e testing.",
+  "author": {
+    "name": "korya"
+  },
+  "homepage": "https://github.com/korya/swd-skills",
+  "repository": "https://github.com/korya/swd-skills",
+  "license": "AGPL-3.0-or-later",
+  "keywords": [
+    "planning",
+    "root-cause-analysis",
+    "code-review",
+    "rebase",
+    "documentation",
+    "pull-request",
+    "e2e-testing"
+  ]
+}
