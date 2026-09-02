@@ -11,6 +11,11 @@ interface CliResult {
   stderr: string;
 }
 
+/** Color codes vary by environment (CI runners set CI=true, enabling them); strip
+ * them so assertions hold everywhere. */
+// biome-ignore lint/suspicious/noControlCharactersInRegex: ANSI escapes are control chars
+const ANSI = /\x1b\[[0-9;]*m/g;
+
 /** End-to-end through main(): real argv, real fs, captured output. */
 function cli(args: string[], opts: { cwd?: string } = {}): CliResult {
   const out: string[] = [];
@@ -21,7 +26,11 @@ function cli(args: string[], opts: { cwd?: string } = {}): CliResult {
   try {
     if (opts.cwd) process.chdir(opts.cwd);
     const code = main(args);
-    return { code, stdout: out.join("\n"), stderr: err.join("\n") };
+    return {
+      code,
+      stdout: out.join("\n").replace(ANSI, ""),
+      stderr: err.join("\n").replace(ANSI, ""),
+    };
   } finally {
     process.chdir(prevCwd);
     logSpy.mockRestore();
