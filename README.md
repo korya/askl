@@ -1,4 +1,4 @@
-# <img src="assets/askl.png" alt="askl mascot, an avocet" height="42"> askl [![CI](https://github.com/korya/askl/actions/workflows/ci.yml/badge.svg)](https://github.com/korya/askl/actions/workflows/ci.yml) [![Marketplace](https://img.shields.io/github/v/release/korya/askl?label=marketplace&logo=github&color=2ea44f)](https://github.com/marketplace/actions/askl)
+# <img src="assets/askl.png" alt="askl mascot, an avocet" height="55"> askl [![CI](https://github.com/korya/askl/actions/workflows/ci.yml/badge.svg)](https://github.com/korya/askl/actions/workflows/ci.yml) [![Marketplace](https://img.shields.io/github/v/release/korya/askl?label=marketplace&logo=github&color=2ea44f)](https://github.com/marketplace/actions/askl)
 
 askl is a deterministic linter for [agent skills](https://agentskills.io/specification)
 and [agent plugins](https://agent-plugins.org/). It verifies compliance with the open
@@ -7,6 +7,17 @@ catch incompatibilities in CI before your users do.
 
 It is plain static analysis: it never calls a model or the network at lint time, and it
 works without a config file.
+
+- Four compliance dialects, each versioned and frozen: the agentskills.io and
+  agent-plugins.org specs, Claude Code, and Codex
+- Auto-detection of what you point it at (a skill, a plugin, a marketplace repo) and of
+  which dialects your layout targets
+- Union runs: lint against several runtimes at once, with guidance when their layouts
+  seem to conflict
+- Vendor rules backed by verified runtime behavior, with sources cited in every dialect
+  file
+- Text, JSON, SARIF, and GitHub-annotation output
+- A zero-config GitHub Action and an installation-free CLI (`npx @korya/askl`)
 
 ## GitHub Action
 
