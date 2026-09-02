@@ -5,7 +5,10 @@
   "type": "module",
   "license": "MIT",
   "author": "korya",
-  "repository": "github:korya/agent-skills-lint",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/korya/agent-skills-lint.git"
+  },
   "homepage": "https://github.com/korya/agent-skills-lint#readme",
   "bugs": "https://github.com/korya/agent-skills-lint/issues",
   "keywords": [
@@ -22,7 +25,7 @@
     "node": ">=20"
   },
   "bin": {
-    "agent-skills-lint": "./dist/cli.js"
+    "agent-skills-lint": "dist/cli.js"
   },
   "files": [
     "dist"
