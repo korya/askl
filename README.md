@@ -1,4 +1,4 @@
-# askl [![CI](https://github.com/korya/askl/actions/workflows/ci.yml/badge.svg)](https://github.com/korya/askl/actions/workflows/ci.yml) [![Marketplace](https://img.shields.io/github/v/release/korya/askl?label=marketplace&logo=github&color=2ea44f)](https://github.com/marketplace/actions/askl)
+# <img src="assets/askl.png" alt="askl mascot, an avocet" height="42"> askl [![CI](https://github.com/korya/askl/actions/workflows/ci.yml/badge.svg)](https://github.com/korya/askl/actions/workflows/ci.yml) [![Marketplace](https://img.shields.io/github/v/release/korya/askl?label=marketplace&logo=github&color=2ea44f)](https://github.com/marketplace/actions/askl)
 
 askl is a deterministic linter for [agent skills](https://agentskills.io/specification)
 and [agent plugins](https://agent-plugins.org/). It verifies compliance with the open
