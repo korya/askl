@@ -2,3 +2,4 @@ node_modules/
 *.tsbuildinfo
 .DS_Store
 # dist/ is committed: the GitHub Action runs from it (CI verifies it is fresh)
+coverage/
