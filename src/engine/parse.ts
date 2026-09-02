@@ -41,14 +41,18 @@ export function parseFrontmatter(raw: string): Frontmatter {
   let data: Record<string, unknown> = {};
   try {
     data = (doc.toJS() ?? {}) as Record<string, unknown>;
-  } catch {
-    // unrecoverable — data stays empty
+  } catch (err) {
+    // Unrecoverable (e.g. an unresolved alias): data stays empty; report the cause.
+    parseError ??= (err as Error).message.split("\n")[0];
   }
   const valueRange = (key: string): Range | undefined => {
     if (!isMap(doc.contents)) return undefined;
     for (const item of doc.contents.items) {
       if (!isScalar(item.key) || item.key.value !== key) continue;
       const node = isScalar(item.value) ? item.value : item.key;
+      // Every node in a parsed document carries a range; the guard below exists
+      // for the API contract, not for a reachable state.
+      /* v8 ignore next 2 */
       const [start, , end] = node.range ?? [];
       if (start === undefined || end === undefined) return undefined;
       const s = lc.linePos(start);

@@ -42,9 +42,9 @@ export const manifestSchema: PluginRule = {
     }
     const validate = pluginManifestValidator();
     if (validate(manifest.json)) return;
-    for (const err of validate.errors ?? []) {
+    for (const err of validate.errors!) {
       const where = err.instancePath === "" ? "manifest root" : `\`${err.instancePath}\``;
-      report({ file: manifest.path, message: `${where} ${err.message ?? "is invalid"}` });
+      report({ file: manifest.path, message: `${where} ${err.message}` });
     }
   },
 };

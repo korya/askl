@@ -28,7 +28,7 @@ function readMarketplace(root: string): MarketplaceDoc {
     for (const entry of json.plugins) {
       const source = (entry as { source?: unknown }).source;
       // Only local relative sources can be linted in-repo; remote sources are skipped.
-      if (typeof source === "string" && (source.startsWith("./") || source === "./")) {
+      if (typeof source === "string" && source.startsWith("./")) {
         const dir = resolve(root, source);
         if (exists(dir, "dir")) plugins.push(readPlugin(dir, true));
       }

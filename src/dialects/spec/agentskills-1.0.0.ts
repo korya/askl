@@ -13,6 +13,6 @@ export default defineDialect({
     "skill/frontmatter-schema": { severity: "error" },
     "skill/name-format": { severity: "error" },
     "skill/description-length": { severity: "error", max: 1024, unit: "chars" },
-    "skill/body-size": { severity: "warn", maxLines: 500 },
+    "skill/body-size": { maxLines: 500 }, // severity: the rule default (warn)
   },
 });

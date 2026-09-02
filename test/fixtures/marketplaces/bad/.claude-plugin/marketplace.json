@@ -1,0 +1,1 @@
+{"name": "anthropic-plugins", "owner": {"name": ""}, "plugins": [{}, {"name": "Bad_Name", "source": "./x"}, {"name": "no-source"}]}

@@ -44,19 +44,27 @@ export function resolveSelection(names: string[]): string[] {
   return ids;
 }
 
-export function resolveDialect(id: string): ResolvedDialect {
-  const def = defs.get(id);
-  if (!def) throw new Error(`unknown dialect id \`${id}\``);
-  const base = def.extends ? resolveDialect(def.extends).rules : {};
+/** Overlay a dialect's rule settings onto an inherited base; "off" removes a rule. */
+export function applyRuleSettings(
+  base: ResolvedDialect["rules"],
+  overlay: Record<string, RuleSetting>,
+): ResolvedDialect["rules"] {
   const rules: ResolvedDialect["rules"] = { ...base };
-  for (const [ruleId, setting] of Object.entries(def.rules)) {
+  for (const [ruleId, setting] of Object.entries(overlay)) {
     if (setting === "off") {
       delete rules[ruleId];
     } else {
       rules[ruleId] = { ...rules[ruleId], ...setting };
     }
   }
-  return { id, rules };
+  return rules;
+}
+
+export function resolveDialect(id: string): ResolvedDialect {
+  const def = defs.get(id);
+  if (!def) throw new Error(`unknown dialect id \`${id}\``);
+  const base = def.extends ? resolveDialect(def.extends).rules : {};
+  return { id, rules: applyRuleSettings(base, def.rules) };
 }
 
 export function defaultSelection(vendors: string[] = []): string[] {

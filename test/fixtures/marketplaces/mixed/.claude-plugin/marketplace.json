@@ -1,0 +1,23 @@
+{
+  "name": "mixed",
+  "owner": {
+    "name": "korya"
+  },
+  "plugins": [
+    {
+      "name": "local-ok",
+      "source": "./plugins/local-ok"
+    },
+    {
+      "name": "remote",
+      "source": {
+        "source": "github",
+        "repo": "x/y"
+      }
+    },
+    {
+      "name": "missing-dir",
+      "source": "./plugins/nope"
+    }
+  ]
+}

@@ -71,7 +71,8 @@ var agentskills_1_0_0_default = defineDialect({
     "skill/frontmatter-schema": { severity: "error" },
     "skill/name-format": { severity: "error" },
     "skill/description-length": { severity: "error", max: 1024, unit: "chars" },
-    "skill/body-size": { severity: "warn", maxLines: 500 }
+    "skill/body-size": { maxLines: 500 }
+    // severity: the rule default (warn)
   }
 });
 
@@ -103,19 +104,22 @@ function resolveSelection(names) {
   }
   return ids;
 }
-function resolveDialect(id) {
-  const def = defs.get(id);
-  if (!def) throw new Error(`unknown dialect id \`${id}\``);
-  const base = def.extends ? resolveDialect(def.extends).rules : {};
+function applyRuleSettings(base, overlay) {
   const rules = { ...base };
-  for (const [ruleId, setting] of Object.entries(def.rules)) {
+  for (const [ruleId, setting] of Object.entries(overlay)) {
     if (setting === "off") {
       delete rules[ruleId];
     } else {
       rules[ruleId] = { ...rules[ruleId], ...setting };
     }
   }
-  return { id, rules };
+  return rules;
+}
+function resolveDialect(id) {
+  const def = defs.get(id);
+  if (!def) throw new Error(`unknown dialect id \`${id}\``);
+  const base = def.extends ? resolveDialect(def.extends).rules : {};
+  return { id, rules: applyRuleSettings(base, def.rules) };
 }
 function defaultSelection(vendors = []) {
   return resolveSelection(["spec", ...vendors]);
@@ -157,7 +161,8 @@ function parseFrontmatter(raw) {
   let data = {};
   try {
     data = doc.toJS() ?? {};
-  } catch {
+  } catch (err) {
+    parseError ??= err.message.split("\n")[0];
   }
   const valueRange = (key) => {
     if (!isMap(doc.contents)) return void 0;
@@ -284,7 +289,7 @@ function readMarketplace(root) {
   if (Array.isArray(json?.plugins)) {
     for (const entry of json.plugins) {
       const source = entry.source;
-      if (typeof source === "string" && (source.startsWith("./") || source === "./")) {
+      if (typeof source === "string" && source.startsWith("./")) {
         const dir = resolve(root, source);
         if (exists(dir, "dir")) plugins.push(readPlugin(dir, true));
       }
@@ -639,9 +644,9 @@ var manifestSchema = {
     }
     const validate = pluginManifestValidator();
     if (validate(manifest.json)) return;
-    for (const err of validate.errors ?? []) {
+    for (const err of validate.errors) {
       const where = err.instancePath === "" ? "manifest root" : `\`${err.instancePath}\``;
-      report({ file: manifest.path, message: `${where} ${err.message ?? "is invalid"}` });
+      report({ file: manifest.path, message: `${where} ${err.message}` });
     }
   }
 };
@@ -786,6 +791,11 @@ var ruleRegistry = /* @__PURE__ */ new Map();
 for (const rule of [...skillRules, ...pluginRules, ...claudeRules, ...codexRules]) {
   ruleRegistry.set(rule.id, rule);
 }
+function mustGetRule(ruleId, dialectId) {
+  const rule = ruleRegistry.get(ruleId);
+  if (!rule) throw new Error(`dialect ${dialectId} references unknown rule ${ruleId}`);
+  return rule;
+}
 function flatten(targets) {
   const flat = { skills: [], plugins: [], marketplaces: [] };
   for (const target of targets) {
@@ -806,8 +816,7 @@ function run(targets, dialectIds, opts = {}) {
     const dialect = resolveDialect(dialectId);
     for (const [ruleId, setting] of Object.entries(dialect.rules)) {
       if (setting.pedantic === true && !opts.pedantic) continue;
-      const rule = ruleRegistry.get(ruleId);
-      if (!rule) throw new Error(`dialect ${dialectId} references unknown rule ${ruleId}`);
+      const rule = mustGetRule(ruleId, dialectId);
       const severity = setting.severity ?? rule.defaultSeverity;
       const targetsForRule = rule.appliesTo === "skill" ? flat.skills : rule.appliesTo === "plugin" ? flat.plugins : flat.marketplaces;
       for (const target of targetsForRule) {
