@@ -63,7 +63,9 @@ link resolution, reference-depth and layout warnings.
 Manifest location and schema per dialect (`./plugin.json` for agent-plugins,
 `.claude-plugin/plugin.json` for Claude Code), skill discovery under `skills/`, path
 containment after symlink resolution, `marketplace.json` validation, unknown-field
-warnings with typo suggestions.
+warnings with typo suggestions, and metadata coherence across a plugin's manifests
+(name and version must agree between the root, vendor, and marketplace declarations;
+descriptions may only drift knowingly).
 
 ### [B3] Union semantics
 Each selected dialect judges independently; findings are tagged with the objecting

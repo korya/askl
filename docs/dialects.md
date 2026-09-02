@@ -71,3 +71,7 @@ read `codex-rs/ext/skills/src/render.rs` on the release tag.
   root `plugin.json` + marketplace with `source: "./"`.
 - Both Claude Code and Codex tolerate YAML that strict parsers reject; the spec
   dialect stays strict on purpose (portability is the product).
+- A marketplace entry's `description` is a standalone brief (plugin-marketplaces
+  docs) and legitimately differs from the manifests' descriptions — the coherence
+  rules therefore exempt it, while the entry's `version` pins what Claude Code
+  users receive and is compared.

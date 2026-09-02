@@ -1,0 +1,14 @@
+{
+  "name": "coherence-market",
+  "owner": {
+    "name": "fixture"
+  },
+  "plugins": [
+    {
+      "name": "coherent-triple",
+      "version": "1.0.0",
+      "description": "A different brief is fine here.",
+      "source": "./"
+    }
+  ]
+}

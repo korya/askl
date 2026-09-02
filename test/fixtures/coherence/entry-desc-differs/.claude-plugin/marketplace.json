@@ -1,0 +1,14 @@
+{
+  "name": "coherence-market",
+  "owner": {
+    "name": "fixture"
+  },
+  "plugins": [
+    {
+      "name": "entry-desc-differs",
+      "version": "1.0.0",
+      "description": "Short brief, intentionally different.",
+      "source": "./"
+    }
+  ]
+}

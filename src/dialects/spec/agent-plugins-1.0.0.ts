@@ -10,10 +10,13 @@ export default defineDialect({
   meta: {
     source: "https://agent-plugins.org/",
     schemas: "src/schemas/agent-plugins/1.0.0",
+    note: "coherence rules live here although the spec is silent on vendor manifests: metadata agreement across the files different runtimes read is a packaging/portability concern, which is this dialect's domain",
   },
   rules: {
     "plugin/manifest-location": { severity: "error" },
     "plugin/manifest-schema": { severity: "error" },
     "plugin/skills-discovery": { severity: "warn" },
+    "plugin/manifest-coherence": { severity: "warn" },
+    "plugin/description-coherence": { severity: "warn", pedantic: true },
   },
 });

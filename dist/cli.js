@@ -14897,12 +14897,15 @@ var agent_plugins_1_0_0_default = defineDialect({
   id: "agent-plugins@1.0.0",
   meta: {
     source: "https://agent-plugins.org/",
-    schemas: "src/schemas/agent-plugins/1.0.0"
+    schemas: "src/schemas/agent-plugins/1.0.0",
+    note: "coherence rules live here although the spec is silent on vendor manifests: metadata agreement across the files different runtimes read is a packaging/portability concern, which is this dialect's domain"
   },
   rules: {
     "plugin/manifest-location": { severity: "error" },
     "plugin/manifest-schema": { severity: "error" },
-    "plugin/skills-discovery": { severity: "warn" }
+    "plugin/skills-discovery": { severity: "warn" },
+    "plugin/manifest-coherence": { severity: "warn" },
+    "plugin/description-coherence": { severity: "warn", pedantic: true }
   }
 });
 
@@ -15085,7 +15088,7 @@ function agentsSkillsDirOf(root) {
   const dir = join(root, ".agents", "skills");
   return isDir(dir) ? dir : void 0;
 }
-function readPlugin(root, viaMarketplace = false) {
+function readPlugin(root, viaMarketplace = false, marketplaceEntry) {
   const skillsDir = join(root, "skills");
   const skillsDirExists = isDir(skillsDir);
   const skillsDirEntries = [];
@@ -15107,6 +15110,7 @@ function readPlugin(root, viaMarketplace = false) {
     claudePlugin: readManifest(join(root, ".claude-plugin", "plugin.json")),
     codexPlugin: readManifest(join(root, ".codex-plugin", "plugin.json")),
     viaMarketplace,
+    ...marketplaceEntry !== void 0 ? { marketplaceEntry } : {},
     claudePluginDirEntries: listDirNames(join(root, ".claude-plugin")),
     ...agentsSkillsDir !== void 0 ? { agentsSkillsDir } : {},
     skillsDirExists,
@@ -15133,10 +15137,16 @@ function readMarketplace(root) {
   const json = manifest.json;
   if (Array.isArray(json?.plugins)) {
     for (const entry of json.plugins) {
-      const source = entry.source;
-      if (typeof source === "string" && source.startsWith("./")) {
-        const dir = resolve(root, source);
-        if (exists(dir, "dir")) plugins.push(readPlugin(dir, true));
+      const e = entry;
+      if (typeof e.source === "string" && e.source.startsWith("./")) {
+        const dir = resolve(root, e.source);
+        if (exists(dir, "dir")) {
+          const meta = {};
+          for (const key of ["name", "version", "description"]) {
+            if (typeof e[key] === "string") meta[key] = e[key];
+          }
+          plugins.push(readPlugin(dir, true, meta));
+        }
       }
     }
   }
@@ -15510,7 +15520,72 @@ var skillsDiscovery = {
     }
   }
 };
-var pluginRules = [manifestLocation, manifestSchema, skillsDiscovery];
+function manifestMeta(label, m) {
+  if (!m.exists || m.parseError || typeof m.json !== "object" || m.json === null) return void 0;
+  return { label, meta: m.json };
+}
+function metaSources(plugin, includeMarketplace) {
+  const sources = [
+    manifestMeta("plugin.json", plugin.agentPlugins),
+    manifestMeta(".claude-plugin/plugin.json", plugin.claudePlugin),
+    manifestMeta(".codex-plugin/plugin.json", plugin.codexPlugin)
+  ].filter((s) => s !== void 0);
+  if (includeMarketplace && plugin.marketplaceEntry) {
+    sources.push({ label: "marketplace entry", meta: { ...plugin.marketplaceEntry } });
+  }
+  return sources;
+}
+function checkFieldCoherence(plugin, field, includeMarketplace, consequence, report) {
+  const declared = metaSources(plugin, includeMarketplace).map(({ label, meta }) => ({ label, value: meta[field] })).filter((d) => typeof d.value === "string");
+  if (new Set(declared.map((d) => d.value)).size <= 1) return;
+  const listing = declared.map(
+    (d) => `${d.label} declares ${field === "description" ? "its own text" : `\`${d.value}\``}`
+  ).join(", ");
+  const file = plugin.agentPlugins.exists ? plugin.agentPlugins.path : plugin.root;
+  report({ file, message: `${field} differs across manifests (${listing}) \u2014 ${consequence}` });
+}
+var manifestCoherence = {
+  id: "plugin/manifest-coherence",
+  appliesTo: "plugin",
+  defaultSeverity: "warn",
+  check({ target, report }) {
+    checkFieldCoherence(
+      target,
+      "name",
+      true,
+      "runtimes will present this as different plugins; align the names",
+      report
+    );
+    checkFieldCoherence(
+      target,
+      "version",
+      true,
+      "runtimes disagree about which release this is, and a marketplace pin keeps Claude Code users on the pinned version; align the versions",
+      report
+    );
+  }
+};
+var descriptionCoherence = {
+  id: "plugin/description-coherence",
+  appliesTo: "plugin",
+  defaultSeverity: "warn",
+  check({ target, report }) {
+    checkFieldCoherence(
+      target,
+      "description",
+      false,
+      "runtimes will show users different summaries; align the texts or suppress this rule",
+      report
+    );
+  }
+};
+var pluginRules = [
+  manifestLocation,
+  manifestSchema,
+  skillsDiscovery,
+  manifestCoherence,
+  descriptionCoherence
+];
 
 // src/rules/skill.ts
 var NAME_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
@@ -15823,7 +15898,7 @@ function reportText(diagnostics, dialectIds) {
 }
 
 // src/main.ts
-var VERSION = "0.2.1";
+var VERSION = "0.3.0";
 var HELP = `askl \u2014 deterministic linter for agent skills and plugins
 
 Usage: askl [options] [paths...]

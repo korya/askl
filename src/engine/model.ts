@@ -30,6 +30,12 @@ export interface ManifestFile {
   parseError?: string;
 }
 
+export interface MarketplaceEntryMeta {
+  name?: string;
+  version?: string;
+  description?: string;
+}
+
 export interface SkillsDirEntry {
   name: string;
   dir: string;
@@ -48,6 +54,9 @@ export interface PluginDoc {
   /** True when this plugin is reachable through a marketplace entry — Claude Code
    * can then discover it without a .claude-plugin/plugin.json of its own. */
   viaMarketplace: boolean;
+  /** Metadata the sourcing marketplace entry declares for this plugin. The entry's
+   * version pins what Claude Code users receive. */
+  marketplaceEntry?: MarketplaceEntryMeta;
   /** Entry names inside <root>/.claude-plugin/ (component dirs there are a mistake). */
   claudePluginDirEntries: string[];
   /** <root>/.agents/skills if it exists — Codex repo-scope discovery dir. */

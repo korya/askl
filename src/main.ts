@@ -10,7 +10,7 @@ import { reportJson } from "./reporters/json.js";
 import { reportSarif } from "./reporters/sarif.js";
 import { reportText } from "./reporters/text.js";
 
-const VERSION = "0.2.1";
+const VERSION = "0.3.0";
 
 const HELP = `askl — deterministic linter for agent skills and plugins
 

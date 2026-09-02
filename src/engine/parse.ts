@@ -2,7 +2,14 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, join } from "node:path";
 import { isMap, isScalar, LineCounter, parseDocument } from "yaml";
 import type { Range } from "../diagnostic.js";
-import type { Frontmatter, ManifestFile, PluginDoc, SkillDoc, SkillsDirEntry } from "./model.js";
+import type {
+  Frontmatter,
+  ManifestFile,
+  MarketplaceEntryMeta,
+  PluginDoc,
+  SkillDoc,
+  SkillsDirEntry,
+} from "./model.js";
 
 const FM_OPEN = /^---\r?\n/;
 const FM_CLOSE = /\r?\n---(\r?\n|$)/;
@@ -132,7 +139,11 @@ export function agentsSkillsDirOf(root: string): string | undefined {
   return isDir(dir) ? dir : undefined;
 }
 
-export function readPlugin(root: string, viaMarketplace = false): PluginDoc {
+export function readPlugin(
+  root: string,
+  viaMarketplace = false,
+  marketplaceEntry?: MarketplaceEntryMeta,
+): PluginDoc {
   const skillsDir = join(root, "skills");
   const skillsDirExists = isDir(skillsDir);
   const skillsDirEntries: SkillsDirEntry[] = [];
@@ -157,6 +168,7 @@ export function readPlugin(root: string, viaMarketplace = false): PluginDoc {
     claudePlugin: readManifest(join(root, ".claude-plugin", "plugin.json")),
     codexPlugin: readManifest(join(root, ".codex-plugin", "plugin.json")),
     viaMarketplace,
+    ...(marketplaceEntry !== undefined ? { marketplaceEntry } : {}),
     claudePluginDirEntries: listDirNames(join(root, ".claude-plugin")),
     ...(agentsSkillsDir !== undefined ? { agentsSkillsDir } : {}),
     skillsDirExists,

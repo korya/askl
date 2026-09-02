@@ -375,3 +375,65 @@ describe("bin shim (src/cli.ts)", () => {
     errSpy.mockRestore();
   });
 });
+
+describe("manifest coherence across a plugin's metadata declarations", () => {
+  const rules = (r: CliResult) =>
+    (JSON.parse(r.stdout).diagnostics as { rule: string; message: string }[]).filter((d) =>
+      d.rule.includes("coherence"),
+    );
+  const co = (name: string, flags: string[] = []) =>
+    rules(cli(["--format", "json", ...flags, fx(`coherence/${name}`)]));
+
+  it("stays silent when every declaration agrees", () => {
+    expect(co("coherent-triple")).toEqual([]);
+  });
+
+  it("warns on version drift between manifests, naming both declarations", () => {
+    const out = co("version-drift-manifests");
+    expect(out).toHaveLength(1);
+    expect(out[0]?.rule).toBe("plugin/manifest-coherence");
+    expect(out[0]?.message).toContain("plugin.json declares `1.0.0`");
+    expect(out[0]?.message).toContain(".claude-plugin/plugin.json declares `1.1.0`");
+  });
+
+  it("warns when the marketplace entry pins a different version", () => {
+    const out = co("version-drift-marketplace");
+    expect(out).toHaveLength(1);
+    expect(out[0]?.message).toContain("marketplace entry declares `0.9.0`");
+    expect(out[0]?.message).toContain("pinned version");
+  });
+
+  it("warns on a split name", () => {
+    const out = co("name-split");
+    expect(out).toHaveLength(1);
+    expect(out[0]?.message).toContain("name differs across manifests");
+  });
+
+  it("flags description drift only in pedantic mode", () => {
+    expect(co("desc-drift")).toEqual([]);
+    const out = co("desc-drift", ["--pedantic"]);
+    expect(out).toHaveLength(1);
+    expect(out[0]?.rule).toBe("plugin/description-coherence");
+  });
+
+  it("never compares the marketplace entry's standalone brief", () => {
+    expect(co("entry-desc-differs", ["--pedantic"])).toEqual([]);
+  });
+
+  it("treats absent or non-string fields as no declaration at all", () => {
+    expect(co("sparse-fields", ["--pedantic"])).toEqual([]);
+    expect(co("non-object-vendor", ["--pedantic"])).toEqual([]);
+  });
+
+  it("anchors findings on the plugin root when there is no root manifest", () => {
+    const out = co("rootless-drift");
+    expect(out).toHaveLength(1);
+    expect(out[0]?.message).toContain("rootless-a");
+  });
+
+  it("pins the accepted variance: toastmasters' codex overlay description differs", () => {
+    const out = rules(cli(["--format", "json", "--pedantic", fx("real/toastmasters-mini")]));
+    expect(out).toHaveLength(1);
+    expect(out[0]?.rule).toBe("plugin/description-coherence");
+  });
+});

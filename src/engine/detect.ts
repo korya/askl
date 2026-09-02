@@ -26,11 +26,17 @@ function readMarketplace(root: string): MarketplaceDoc {
   const json = manifest.json as { plugins?: unknown } | undefined;
   if (Array.isArray(json?.plugins)) {
     for (const entry of json.plugins) {
-      const source = (entry as { source?: unknown }).source;
+      const e = entry as Record<string, unknown>;
       // Only local relative sources can be linted in-repo; remote sources are skipped.
-      if (typeof source === "string" && source.startsWith("./")) {
-        const dir = resolve(root, source);
-        if (exists(dir, "dir")) plugins.push(readPlugin(dir, true));
+      if (typeof e.source === "string" && e.source.startsWith("./")) {
+        const dir = resolve(root, e.source);
+        if (exists(dir, "dir")) {
+          const meta: Record<string, string> = {};
+          for (const key of ["name", "version", "description"] as const) {
+            if (typeof e[key] === "string") meta[key] = e[key] as string;
+          }
+          plugins.push(readPlugin(dir, true, meta));
+        }
       }
     }
   }
