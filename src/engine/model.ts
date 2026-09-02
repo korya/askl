@@ -45,6 +45,13 @@ export interface PluginDoc {
   claudePlugin: ManifestFile;
   /** <root>/.codex-plugin/plugin.json — Codex overlay manifest. */
   codexPlugin: ManifestFile;
+  /** True when this plugin is reachable through a marketplace entry — Claude Code
+   * can then discover it without a .claude-plugin/plugin.json of its own. */
+  viaMarketplace: boolean;
+  /** Entry names inside <root>/.claude-plugin/ (component dirs there are a mistake). */
+  claudePluginDirEntries: string[];
+  /** <root>/.agents/skills if it exists — Codex repo-scope discovery dir. */
+  agentsSkillsDir?: string;
   skillsDirExists: boolean;
   skillsDirEntries: SkillsDirEntry[];
   skills: SkillDoc[];
@@ -57,6 +64,8 @@ export interface MarketplaceDoc {
   manifest: ManifestFile;
   /** Plugins resolved from relative marketplace sources. */
   plugins: PluginDoc[];
+  /** <root>/.agents/skills if it exists — Codex repo-scope discovery dir. */
+  agentsSkillsDir?: string;
 }
 
 export type Target = SkillDoc | PluginDoc | MarketplaceDoc;

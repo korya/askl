@@ -115,7 +115,20 @@ function isFile(path: string): boolean {
   }
 }
 
-export function readPlugin(root: string): PluginDoc {
+function listDirNames(path: string): string[] {
+  try {
+    return readdirSync(path);
+  } catch {
+    return [];
+  }
+}
+
+export function agentsSkillsDirOf(root: string): string | undefined {
+  const dir = join(root, ".agents", "skills");
+  return isDir(dir) ? dir : undefined;
+}
+
+export function readPlugin(root: string, viaMarketplace = false): PluginDoc {
   const skillsDir = join(root, "skills");
   const skillsDirExists = isDir(skillsDir);
   const skillsDirEntries: SkillsDirEntry[] = [];
@@ -132,12 +145,16 @@ export function readPlugin(root: string): PluginDoc {
     }
   }
 
+  const agentsSkillsDir = agentsSkillsDirOf(root);
   return {
     kind: "plugin",
     root,
     agentPlugins: readManifest(join(root, "plugin.json")),
     claudePlugin: readManifest(join(root, ".claude-plugin", "plugin.json")),
     codexPlugin: readManifest(join(root, ".codex-plugin", "plugin.json")),
+    viaMarketplace,
+    claudePluginDirEntries: listDirNames(join(root, ".claude-plugin")),
+    ...(agentsSkillsDir !== undefined ? { agentsSkillsDir } : {}),
     skillsDirExists,
     skillsDirEntries,
     skills,

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "korya",
+  "description": "Plugins by korya.",
+  "owner": {
+    "name": "korya",
+    "url": "https://github.com/korya"
+  },
+  "plugins": [
+    {
+      "name": "toastmasters",
+      "source": "./plugins/toastmasters",
+      "displayName": "Toastmasters",
+      "description": "Manage your Toastmasters club participation on easy-Speak: attendance, roles, and speaking schedule, driven through the site's web UI.",
+      "version": "0.1.0",
+      "author": {
+        "name": "korya",
+        "url": "https://github.com/korya"
+      },
+      "repository": "https://github.com/korya/toastmasters-skills",
+      "license": "MIT",
+      "category": "productivity",
+      "keywords": ["toastmasters", "easy-speak", "meetings", "browser-automation"],
+      "tags": ["toastmasters", "easy-speak", "attendance", "public-speaking"]
+    }
+  ]
+}

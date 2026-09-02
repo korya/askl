@@ -1,7 +1,7 @@
 import { readdirSync, statSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import type { MarketplaceDoc, Target } from "./model.js";
-import { readManifest, readPlugin, readSkill } from "./parse.js";
+import { agentsSkillsDirOf, readManifest, readPlugin, readSkill } from "./parse.js";
 
 function exists(path: string, kind: "file" | "dir"): boolean {
   try {
@@ -30,11 +30,18 @@ function readMarketplace(root: string): MarketplaceDoc {
       // Only local relative sources can be linted in-repo; remote sources are skipped.
       if (typeof source === "string" && (source.startsWith("./") || source === "./")) {
         const dir = resolve(root, source);
-        if (exists(dir, "dir")) plugins.push(readPlugin(dir));
+        if (exists(dir, "dir")) plugins.push(readPlugin(dir, true));
       }
     }
   }
-  return { kind: "marketplace", root, manifest, plugins };
+  const agentsSkillsDir = agentsSkillsDirOf(root);
+  return {
+    kind: "marketplace",
+    root,
+    manifest,
+    plugins,
+    ...(agentsSkillsDir !== undefined ? { agentsSkillsDir } : {}),
+  };
 }
 
 /**
@@ -56,11 +63,13 @@ export function detectTargets(inputPath: string): Target[] {
   }
 
   if (exists(join(path, "SKILL.md"), "file")) return [readSkill(path)];
-  if (hasAnyPluginManifest(path) || exists(join(path, "skills"), "dir")) {
-    return [readPlugin(path)];
-  }
+  // Marketplace first: a repo can be both a marketplace and a plugin (an entry
+  // with source "./" points at itself); the marketplace view covers both.
   if (exists(join(path, ".claude-plugin", "marketplace.json"), "file")) {
     return [readMarketplace(path)];
+  }
+  if (hasAnyPluginManifest(path) || exists(join(path, "skills"), "dir")) {
+    return [readPlugin(path)];
   }
 
   const childSkills: Target[] = [];

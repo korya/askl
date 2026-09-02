@@ -42,6 +42,19 @@ function loadConfig(): Config {
   }
 }
 
+/** Vendor dialects join the default run when their layout is present in the targets. */
+function detectVendors(targets: ReturnType<typeof detectTargets>): string[] {
+  const vendors: string[] = [];
+  const plugins = targets.flatMap((t) =>
+    t.kind === "plugin" ? [t] : t.kind === "marketplace" ? t.plugins : [],
+  );
+  const anyMarketplace = targets.some((t) => t.kind === "marketplace");
+  const anyAgentsDir = targets.some((t) => t.kind !== "skill" && t.agentsSkillsDir !== undefined);
+  if (anyMarketplace || plugins.some((p) => p.claudePlugin.exists)) vendors.push("claude");
+  if (anyAgentsDir || plugins.some((p) => p.codexPlugin.exists)) vendors.push("codex");
+  return vendors;
+}
+
 export function main(argv: string[]): number {
   const { values, positionals } = parseArgs({
     args: argv,
@@ -66,13 +79,16 @@ export function main(argv: string[]): number {
   }
 
   const config = loadConfig();
-  const selection = values.dialect?.flatMap((d) => d.split(",")) ?? config.dialects;
-  const dialectIds = selection ? resolveSelection(selection) : defaultSelection();
-
   const paths = positionals.length > 0 ? positionals : ["."];
   const targets = paths.flatMap((p) => detectTargets(p));
 
-  let diagnostics = run(targets, dialectIds);
+  const selection = values.dialect?.flatMap((d) => d.split(",")) ?? config.dialects;
+  const dialectIds = selection
+    ? resolveSelection(selection)
+    : defaultSelection(detectVendors(targets));
+
+  const pedantic = values.pedantic || config.pedantic === true;
+  let diagnostics = run(targets, dialectIds, { pedantic });
 
   const ignored = new Set(config.ignore ?? []);
   diagnostics = diagnostics.filter((d) => !ignored.has(d.rule));

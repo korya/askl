@@ -1,0 +1,13 @@
+{
+  "name": "toastmasters",
+  "description": "Manage your Toastmasters club participation on easy-Speak: check and set meeting attendance, claim roles, and see when you are next speaking. Drives the easy-Speak web UI in a browser, since the site has no API.",
+  "version": "0.1.0",
+  "author": {
+    "name": "korya",
+    "url": "https://github.com/korya"
+  },
+  "homepage": "https://github.com/korya/toastmasters-skills",
+  "repository": "https://github.com/korya/toastmasters-skills",
+  "license": "MIT",
+  "keywords": ["toastmasters", "easy-speak", "meetings", "attendance", "browser-automation"]
+}

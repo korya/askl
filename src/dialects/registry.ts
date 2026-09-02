@@ -1,9 +1,11 @@
+import claudeCode202609 from "./claude-code/2026-09.js";
+import codex202609 from "./codex/2026-09.js";
 import agentPlugins100 from "./spec/agent-plugins-1.0.0.js";
 import agentSkills100 from "./spec/agentskills-1.0.0.js";
 import type { DialectDef, RuleSetting } from "./types.js";
 
 const defs = new Map<string, DialectDef>();
-for (const def of [agentSkills100, agentPlugins100]) {
+for (const def of [agentSkills100, agentPlugins100, claudeCode202609, codex202609]) {
   defs.set(def.id, def);
 }
 
@@ -15,6 +17,9 @@ for (const def of [agentSkills100, agentPlugins100]) {
 const aliases: Record<string, string[]> = {
   agentskills: ["agentskills@1.0.0"],
   "agent-plugins": ["agent-plugins@1.0.0"],
+  claude: ["claude-code@2026-09"],
+  "claude-code": ["claude-code@2026-09"],
+  codex: ["codex@2026-09"],
   spec: ["agentskills@1.0.0", "agent-plugins@1.0.0"],
   all: [...defs.keys()],
 };
@@ -54,8 +59,7 @@ export function resolveDialect(id: string): ResolvedDialect {
   return { id, rules };
 }
 
-export function defaultSelection(): string[] {
-  // Spec dialects always run; vendor dialects join automatically once registered
-  // and their layout is detected (claude-code, codex — step 6 of the plan).
-  return resolveSelection(["spec"]);
+export function defaultSelection(vendors: string[] = []): string[] {
+  // Spec dialects always run; detected vendor dialects join automatically.
+  return resolveSelection(["spec", ...vendors]);
 }
