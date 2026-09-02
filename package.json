@@ -1,5 +1,5 @@
 {
-  "name": "agent-skills-lint",
+  "name": "@korya/agent-skills-lint",
   "version": "0.1.0",
   "description": "Deterministic linter for agent skills and agent plugins: agentskills.io, agent-plugins.org, Claude Code, and Codex compliance.",
   "type": "module",
@@ -50,5 +50,8 @@
     "tsup": "^8.5.0",
     "typescript": "^5.9.0",
     "vitest": "^3.2.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

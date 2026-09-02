@@ -32,7 +32,7 @@ Optional inputs mirror the CLI flags:
 ## CLI (secondary use)
 
 ```console
-$ npx agent-skills-lint
+$ npx @korya/agent-skills-lint
 agent-skills-lint · dialects: agentskills@1.0.0, agent-plugins@1.0.0, claude-code@2026-09
 
 skills/examine/SKILL.md
@@ -65,7 +65,7 @@ passes on warnings (add `strict: "true"` to fail on warnings too).
 ### Local check while writing a skill
 
 ```console
-$ npx agent-skills-lint skills/my-skill
+$ npx @korya/agent-skills-lint skills/my-skill
 agent-skills-lint · dialects: agentskills@1.0.0, agent-plugins@1.0.0
 
 skills/my-skill/SKILL.md
@@ -80,7 +80,7 @@ whole marketplace repo — detection is automatic.
 ### Cross-runtime compatibility: "I built this for Claude Code — will Codex take it?"
 
 ```console
-$ npx agent-skills-lint --dialect claude,codex .
+$ npx @korya/agent-skills-lint --dialect claude,codex .
 agent-skills-lint · dialects: claude-code@2026-09, codex@2026-09
 
 skills/easy-speak/SKILL.md
@@ -100,7 +100,7 @@ When layouts genuinely diverge, the union run tells you how to satisfy both side
 ### Pre-publish audit before listing in a marketplace
 
 ```console
-$ npx agent-skills-lint --strict --pedantic .
+$ npx @korya/agent-skills-lint --strict --pedantic .
 ```
 
 `--strict` turns every silent degradation (truncated descriptions, oversized bodies)
@@ -122,7 +122,7 @@ versions they resolved to.
 ### SARIF into GitHub code scanning
 
 ```yaml
-      - run: npx agent-skills-lint --format sarif . > results.sarif
+      - run: npx @korya/agent-skills-lint --format sarif . > results.sarif
       - uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results.sarif
