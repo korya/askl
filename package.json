@@ -1,0 +1,38 @@
+{
+  "name": "agent-skills-lint",
+  "version": "0.1.0",
+  "description": "Deterministic linter for agent skills and agent plugins: agentskills.io, agent-plugins.org, Claude Code, and Codex compliance.",
+  "type": "module",
+  "license": "MIT",
+  "author": "korya",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "agent-skills-lint": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check src test",
+    "check": "npm run typecheck && npm run lint && npm run test"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "picocolors": "^1.1.1",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.5",
+    "yaml": "^2.8.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.0",
+    "@types/node": "^24.0.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  }
+}
