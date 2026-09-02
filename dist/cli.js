@@ -14999,12 +14999,9 @@ function parseFrontmatter(raw) {
   const firstError = doc.errors[0];
   if (firstError) {
     parseError = firstError.message.split("\n")[0]?.replace(/ at line \d+, column \d+:?$/, "");
-    const offset = firstError.pos?.[0];
-    if (offset !== void 0) {
-      const p = lc.linePos(offset);
-      const pos = { line: p.line + lineOffset, col: p.col };
-      parseErrorRange = { start: pos, end: pos };
-    }
+    const p = lc.linePos(firstError.pos[0]);
+    const pos = { line: p.line + lineOffset, col: p.col };
+    parseErrorRange = { start: pos, end: pos };
   }
   let data = {};
   try {
@@ -15783,18 +15780,16 @@ function crossDialectConflicts(flat, dialectIds) {
   }
   return out;
 }
+var SEP = "\0";
 function mergeAcrossDialects(diagnostics) {
   const byKey = /* @__PURE__ */ new Map();
   for (const d of diagnostics) {
-    const key = [d.rule, d.severity, d.file, d.range?.start.line, d.range?.start.col, d.message].map(String).join("\0");
-    const existing = byKey.get(key);
-    if (existing) {
-      if (!existing.dialects.includes(d.dialects[0])) existing.dialects.push(d.dialects[0]);
-    } else {
-      byKey.set(key, { ...d, dialects: [...d.dialects] });
-    }
+    const key = [d.rule, d.severity, d.file, d.range?.start.line, d.range?.start.col, d.message].map(String).join(SEP);
+    const entry = byKey.get(key) ?? { diagnostic: d, dialects: /* @__PURE__ */ new Set() };
+    for (const id of d.dialects) entry.dialects.add(id);
+    byKey.set(key, entry);
   }
-  return [...byKey.values()];
+  return [...byKey.values()].map((e) => ({ ...e.diagnostic, dialects: [...e.dialects] }));
 }
 
 // src/reporters/github.ts

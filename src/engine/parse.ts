@@ -37,12 +37,10 @@ export function parseFrontmatter(raw: string): Frontmatter {
     // Drop the frontmatter-relative position suffix; the diagnostic range carries
     // the file-relative position instead.
     parseError = firstError.message.split("\n")[0]?.replace(/ at line \d+, column \d+:?$/, "");
-    const offset = firstError.pos?.[0];
-    if (offset !== undefined) {
-      const p = lc.linePos(offset);
-      const pos = { line: p.line + lineOffset, col: p.col };
-      parseErrorRange = { start: pos, end: pos };
-    }
+    // YAMLError.pos is declared required by the yaml package, so it is always set.
+    const p = lc.linePos(firstError.pos[0]);
+    const pos = { line: p.line + lineOffset, col: p.col };
+    parseErrorRange = { start: pos, end: pos };
   }
 
   let data: Record<string, unknown> = {};
@@ -59,9 +57,10 @@ export function parseFrontmatter(raw: string): Frontmatter {
       const node = isScalar(item.value) ? item.value : item.key;
       // Every node in a parsed document carries a range; the guard below exists
       // for the API contract, not for a reachable state.
-      /* v8 ignore next 2 */
+      /* v8 ignore start */
       const [start, , end] = node.range ?? [];
       if (start === undefined || end === undefined) return undefined;
+      /* v8 ignore stop */
       const s = lc.linePos(start);
       const e = lc.linePos(end);
       return {
