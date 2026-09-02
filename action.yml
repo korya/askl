@@ -1,0 +1,41 @@
+name: agent-skills-lint
+description: >-
+  Deterministic linter for agent skills and agent plugins — agentskills.io,
+  agent-plugins.org, Claude Code, and Codex compliance. Zero-config: detects
+  skills, plugins, and marketplaces, and annotates PR diffs.
+author: korya
+branding:
+  icon: check-circle
+  color: green
+
+inputs:
+  path:
+    description: Path to lint (a skill, plugin, marketplace, or repo root)
+    required: false
+    default: "."
+  dialect:
+    description: >-
+      Comma-separated dialects (spec, claude, codex, all, or name@version).
+      Default: spec dialects plus auto-detected vendor dialects.
+    required: false
+    default: ""
+  strict:
+    description: Treat warnings as errors
+    required: false
+    default: "false"
+  pedantic:
+    description: Enable opinion-tier warnings
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Lint agent skills and plugins
+      shell: bash
+      run: |
+        args=(--format github)
+        [ -n "${{ inputs.dialect }}" ] && args+=(--dialect "${{ inputs.dialect }}")
+        [ "${{ inputs.strict }}" = "true" ] && args+=(--strict)
+        [ "${{ inputs.pedantic }}" = "true" ] && args+=(--pedantic)
+        node "${{ github.action_path }}/dist/cli.js" "${args[@]}" "${{ inputs.path }}"

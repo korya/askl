@@ -5,6 +5,7 @@ import type { Diagnostic } from "./diagnostic.js";
 import { defaultSelection, resolveSelection } from "./dialects/registry.js";
 import { detectTargets } from "./engine/detect.js";
 import { run } from "./engine/run.js";
+import { reportGithub } from "./reporters/github.js";
 import { reportJson } from "./reporters/json.js";
 import { reportSarif } from "./reporters/sarif.js";
 import { reportText } from "./reporters/text.js";
@@ -20,7 +21,8 @@ Options:
                       (spec, agentskills, agent-plugins, all, or name@version)
   --strict            treat warnings as errors
   --pedantic          enable opinion-tier warnings
-  --format <name>     output format: text | json | sarif (default: text)
+  --format <name>     output format: text | json | sarif | github
+                      (default: text; github annotations inside GitHub Actions)
   --version           print version
   --help              show this help
 
@@ -98,15 +100,18 @@ export function main(argv: string[]): number {
     );
   }
 
-  const format = values.format;
+  const format =
+    values.format !== "text" || process.env.GITHUB_ACTIONS !== "true" ? values.format : "github";
   if (format === "json") {
     console.log(reportJson(diagnostics, dialectIds));
   } else if (format === "sarif") {
     console.log(reportSarif(diagnostics, VERSION));
+  } else if (format === "github") {
+    console.log(reportGithub(diagnostics, dialectIds));
   } else if (format === "text") {
     console.log(reportText(diagnostics, dialectIds));
   } else {
-    console.error(`unknown format \`${format}\` (expected text, json, or sarif)`);
+    console.error(`unknown format \`${format}\` (expected text, json, sarif, or github)`);
     return 2;
   }
 
