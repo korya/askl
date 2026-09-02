@@ -19,6 +19,8 @@ works without a config file.
 - Text, JSON, SARIF, and GitHub-annotation output
 - A zero-config GitHub Action and an installation-free CLI (`npx @korya/askl`)
 
+<img src="assets/askl-in-action.png" alt="The askl avocet picking bugs out of a pile of broken files, with a tidy plugin tree on the other bank" width="100%">
+
 ## GitHub Action
 
 ```yaml
