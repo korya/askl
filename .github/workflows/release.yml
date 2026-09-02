@@ -1,0 +1,110 @@
+name: Release
+
+# Push a tag, get a release. Everything below is deterministic: the notes come
+# from CHANGELOG.md, and nothing is published unless the tag agrees with every
+# version source and the full gate passes.
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: write # create the release, move the floating major tag
+  id-token: write # OIDC for npm trusted publishing (no stored token)
+
+jobs:
+  release:
+    name: Verify and publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # the floating tag is moved from here
+      - uses: actions/setup-node@v7
+        with:
+          # Node 24 ships npm >= 11.5.1, which trusted publishing requires; the
+          # Node 22 used for CI ships 10.9.8 and cannot publish.
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          # No dependency cache: a release is built from what the tag says,
+          # never from a warm cache.
+
+      - name: Read the version from the tag
+        id: v
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          version="${tag#v}"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          # 1.2.3-rc.1 is a prerelease: flagged on GitHub, published to npm under
+          # the `next` dist-tag, and never promoted to the floating major tag.
+          case "$version" in
+            *-*) echo "prerelease=true" >> "$GITHUB_OUTPUT" ;;
+            *)   echo "prerelease=false" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      # ---- gate: everything that can fail, fails here, before any effect ----
+
+      - name: Verify npm is new enough for trusted publishing
+        run: |
+          required=11.5.1
+          have="$(npm --version)"
+          if [ "$(printf '%s\n%s\n' "$required" "$have" | sort -V | head -1)" != "$required" ]; then
+            echo "::error::npm $have is below $required, which trusted publishing requires"
+            exit 1
+          fi
+          echo "npm $have supports trusted publishing"
+
+      - name: Verify the tag agrees with every version source
+        run: node scripts/check-release-consistency.mjs "${{ steps.v.outputs.version }}"
+
+      - name: Extract release notes from CHANGELOG.md
+        run: |
+          node scripts/changelog-section.mjs "${{ steps.v.outputs.version }}" > "$RUNNER_TEMP/notes.md"
+          echo "--- release notes ---"
+          cat "$RUNNER_TEMP/notes.md"
+
+      - run: npm ci
+      - run: npm run check
+
+      - name: Verify committed dist/ matches the source at this tag
+        run: |
+          npm run build
+          git diff --exit-code dist/ || {
+            echo "::error::dist/ is stale at this tag — build and commit before tagging"
+            exit 1
+          }
+
+      # ---- effects: ordered by reversibility, npm last because it is forever ----
+
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.v.outputs.tag }}
+          PRERELEASE: ${{ steps.v.outputs.prerelease }}
+        run: |
+          if [ "$PRERELEASE" = "true" ]; then
+            gh release create "$TAG" --title "$TAG" --notes-file "$RUNNER_TEMP/notes.md" --prerelease
+          else
+            gh release create "$TAG" --title "$TAG" --notes-file "$RUNNER_TEMP/notes.md"
+          fi
+
+      - name: Move the floating major tag
+        if: steps.v.outputs.prerelease == 'false'
+        env:
+          VERSION: ${{ steps.v.outputs.version }}
+        run: |
+          major="v${VERSION%%.*}"
+          git tag -f -a "$major" -m "floating tag for Action consumers (tracks latest ${major}.x)"
+          git push -f origin "$major"
+
+      # Provenance is generated automatically when publishing through a trusted
+      # publisher, so no --provenance flag and no token are needed here.
+      - name: Publish to npm
+        env:
+          PRERELEASE: ${{ steps.v.outputs.prerelease }}
+        run: |
+          if [ "$PRERELEASE" = "true" ]; then
+            npm publish --tag next
+          else
+            npm publish
+          fi

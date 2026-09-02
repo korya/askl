@@ -12,6 +12,16 @@ The evidence behind each vendor fact lives in [docs/dialects.md](docs/dialects.m
 
 ## [Unreleased]
 
+No change to any diagnostic.
+
+### Added
+
+- Releases are cut by pushing a `vX.Y.Z` tag. A workflow verifies the tag against
+  `package.json` and `src/main.ts`, requires a non-empty changelog section, runs
+  the full gate, and rebuilds and diffs `dist/` before creating the GitHub release
+  from that section, moving the floating major tag, and publishing to npm through
+  OIDC trusted publishing. See [AGENTS.md](AGENTS.md#releasing).
+
 ## [1.0.1] - 2026-09-02
 
 No change to any diagnostic: the same inputs produce the same findings and exit codes

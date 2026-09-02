@@ -73,6 +73,27 @@ release notes and the changelog cannot drift. Changes that alter no diagnostic
 - Rules are dialect-blind: parameters and severity arrive resolved; never branch
   on a dialect name inside a rule.
 
+## Releasing
+
+Push a tag; `.github/workflows/release.yml` does the rest, deterministically.
+
+1. Move the `## [Unreleased]` entries under a `## [X.Y.Z] - YYYY-MM-DD` heading
+   in `CHANGELOG.md` and add its compare link at the bottom.
+2. Bump the version in **both** `package.json` and `src/main.ts`; they must
+   agree with the tag or the workflow refuses to release.
+3. `npm run check && npm run build`, then commit (`dist/` is committed).
+4. `git tag -a vX.Y.Z -m "askl X.Y.Z" && git push && git push --tags`.
+
+The workflow verifies the tag against both version sources, requires a non-empty
+changelog section, runs the full gate, rebuilds and diffs `dist/`, and only then
+creates the GitHub release from that changelog section, moves the floating major
+tag, and publishes to npm through OIDC trusted publishing. npm publish is last
+because a version number is permanent; if it fails, everything else is already
+correct and `npm publish` locally is the fallback.
+
+A `X.Y.Z-rc.N` tag is treated as a prerelease: flagged on GitHub, published under
+the npm `next` dist-tag, and never promoted to the floating major tag.
+
 ## Conventions
 
 - npm (lockfile committed), TypeScript strict, ESM only, Node >= 20.
