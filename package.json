@@ -5,6 +5,19 @@
   "type": "module",
   "license": "MIT",
   "author": "korya",
+  "repository": "github:korya/agent-skills-lint",
+  "homepage": "https://github.com/korya/agent-skills-lint#readme",
+  "bugs": "https://github.com/korya/agent-skills-lint/issues",
+  "keywords": [
+    "linter",
+    "agent-skills",
+    "agent-plugins",
+    "skill-md",
+    "claude-code",
+    "codex",
+    "github-action",
+    "sarif"
+  ],
   "engines": {
     "node": ">=20"
   },
@@ -19,7 +32,8 @@
     "test": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "lint": "biome check src test",
-    "check": "npm run typecheck && npm run lint && npm run test"
+    "check": "npm run typecheck && npm run lint && npm run test",
+    "prepublishOnly": "npm run check && npm run build"
   },
   "dependencies": {
     "ajv": "^8.17.1",
