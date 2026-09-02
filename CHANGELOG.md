@@ -12,6 +12,8 @@ The evidence behind each vendor fact lives in [docs/dialects.md](docs/dialects.m
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-09-02
+
 No change to any diagnostic.
 
 ### Added
@@ -21,7 +23,6 @@ No change to any diagnostic.
   the full gate, and rebuilds and diffs `dist/` before creating the GitHub release
   from that section, moving the floating major tag, and publishing to npm through
   OIDC trusted publishing. See [AGENTS.md](AGENTS.md#releasing).
-
 ## [1.0.1] - 2026-09-02
 
 No change to any diagnostic: the same inputs produce the same findings and exit codes
@@ -98,7 +99,8 @@ surface, the CLI flags, the Action inputs, and the config schema.
 - Output formats: text, JSON, SARIF, and GitHub annotations.
 - A zero-config GitHub Action and an installation-free CLI.
 
-[unreleased]: https://github.com/korya/askl/compare/v1.0.1...HEAD
+[unreleased]: https://github.com/korya/askl/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/korya/askl/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/korya/askl/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/korya/askl/compare/v0.3.0...v1.0.0
 [0.3.0]: https://github.com/korya/askl/compare/v0.2.1...v0.3.0
