@@ -12,7 +12,7 @@ import { reportText } from "./reporters/text.js";
 
 const VERSION = "0.3.0";
 
-const HELP = `askl — deterministic linter for agent skills and plugins
+const HELP = `askl: a deterministic linter for agent skills and plugins
 
 Usage: askl [options] [paths...]
 

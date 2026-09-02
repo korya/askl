@@ -94,7 +94,7 @@ $ npx @korya/askl --dialect claude,codex .
 askl · dialects: claude-code@2026-09, codex@2026-09
 
 skills/easy-speak/SKILL.md
-  ⚠ [codex@2026-09] codex/skill-body-budget  SKILL.md is 11913 bytes — Codex silently truncates skill contents at 8000 bytes on activation; instructions past the cut are lost
+  ⚠ [codex@2026-09] codex/skill-body-budget  SKILL.md is 11913 bytes, and Codex silently truncates skill contents at 8000 bytes on activation; instructions past the cut are lost
 
 0 errors · 1 warning
 ```
@@ -103,7 +103,7 @@ When layouts genuinely diverge, the union run tells you how to satisfy both side
 
 ```text
   ⚠ [agent-plugins@1.0.0, claude-code@2026-09] conflict/dual-layout  this plugin satisfies
-    agent-plugins@1.0.0 but not claude-code@2026-09 — the layouts are compatible side by
+    agent-plugins@1.0.0 but not claude-code@2026-09; the layouts are compatible side by
     side: add .claude-plugin/plugin.json or a marketplace entry for Claude Code
 ```
 

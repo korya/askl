@@ -55,7 +55,7 @@ parameter edges no fixture can reach) a unit test — and coverage still at 100%
   a spec recommendation; `pedantic: true` = opinion, off by default. A severity
   claim about a runtime needs a verified fact in docs/dialects.md behind it.
 - **Messages state the consequence and the fix**, not just the violation:
-  "SKILL.md is 11913 bytes — Codex silently truncates skill contents at 8000
+  "SKILL.md is 11913 bytes, and Codex silently truncates skill contents at 8000
   bytes on activation; instructions past the cut are lost" beats "file too
   large". Include measured values and limits; carry a `range` whenever the
   parser can point at the offending value.

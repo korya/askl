@@ -14,7 +14,7 @@ export const skillBodyBudget: SkillRule = {
       report({
         file: target.path,
         message:
-          `SKILL.md is ${target.bytes} bytes — Codex silently truncates skill contents at ` +
+          `SKILL.md is ${target.bytes} bytes, and Codex silently truncates skill contents at ` +
           `${maxBytes} bytes on activation (MAX_SKILL_PROMPT_BYTES); instructions past the ` +
           "cut are lost",
       });
@@ -36,7 +36,7 @@ export const skillsListBudget: PluginRule = {
       report({
         file: target.root,
         message:
-          `combined skill descriptions are ~${total} chars — near or over Codex's skills ` +
+          `combined skill descriptions are ~${total} chars, near or over Codex's skills ` +
           "listing budget; the longest descriptions get shortened first (budget is " +
           "context-window-relative, so this is advisory)",
       });
@@ -64,7 +64,7 @@ function checkAgentsDrift(
       report({
         file: copyPath,
         message:
-          `.agents/skills/${name} has drifted from ${canonical.path} — Codex repo-scope ` +
+          `.agents/skills/${name} has drifted from ${canonical.path}: Codex repo-scope ` +
           "users get a different skill than plugin users; sync the copies or replace the " +
           "copy with a symlink (Codex follows them)",
       });

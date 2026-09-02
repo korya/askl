@@ -20,7 +20,7 @@ export const manifestLocation: PluginRule = {
       report({
         file: target.root,
         message:
-          "no plugin.json at the plugin root — agent-plugins.org requires the manifest at " +
+          "no plugin.json at the plugin root; agent-plugins.org requires the manifest at " +
           "`<root>/plugin.json`",
       });
     }
@@ -60,7 +60,7 @@ export const skillsDiscovery: PluginRule = {
         report({
           file: entry.dir,
           message:
-            `skills/${entry.name}/ has no SKILL.md — it is not a skill and agents will ` +
+            `skills/${entry.name}/ has no SKILL.md, so it is not a skill and agents will ` +
             "ignore it during discovery",
         });
       }
@@ -108,7 +108,7 @@ function checkFieldCoherence(
     )
     .join(", ");
   const file = plugin.agentPlugins.exists ? plugin.agentPlugins.path : plugin.root;
-  report({ file, message: `${field} differs across manifests (${listing}) — ${consequence}` });
+  report({ file, message: `${field} differs across manifests (${listing}): ${consequence}` });
 }
 
 export const manifestCoherence: PluginRule = {

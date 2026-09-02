@@ -15324,7 +15324,7 @@ var skillBodyBudget = {
     if (target.bytes > maxBytes) {
       report({
         file: target.path,
-        message: `SKILL.md is ${target.bytes} bytes \u2014 Codex silently truncates skill contents at ${maxBytes} bytes on activation (MAX_SKILL_PROMPT_BYTES); instructions past the cut are lost`
+        message: `SKILL.md is ${target.bytes} bytes, and Codex silently truncates skill contents at ${maxBytes} bytes on activation (MAX_SKILL_PROMPT_BYTES); instructions past the cut are lost`
       });
     }
   }
@@ -15342,7 +15342,7 @@ var skillsListBudget = {
     if (total > max) {
       report({
         file: target.root,
-        message: `combined skill descriptions are ~${total} chars \u2014 near or over Codex's skills listing budget; the longest descriptions get shortened first (budget is context-window-relative, so this is advisory)`
+        message: `combined skill descriptions are ~${total} chars, near or over Codex's skills listing budget; the longest descriptions get shortened first (budget is context-window-relative, so this is advisory)`
       });
     }
   }
@@ -15362,7 +15362,7 @@ function checkAgentsDrift(agentsSkillsDir, skills, report) {
     if (copy !== canonical.raw) {
       report({
         file: copyPath,
-        message: `.agents/skills/${name} has drifted from ${canonical.path} \u2014 Codex repo-scope users get a different skill than plugin users; sync the copies or replace the copy with a symlink (Codex follows them)`
+        message: `.agents/skills/${name} has drifted from ${canonical.path}: Codex repo-scope users get a different skill than plugin users; sync the copies or replace the copy with a symlink (Codex follows them)`
       });
     }
   }
@@ -15478,7 +15478,7 @@ var manifestLocation = {
     if (!target.agentPlugins.exists) {
       report({
         file: target.root,
-        message: "no plugin.json at the plugin root \u2014 agent-plugins.org requires the manifest at `<root>/plugin.json`"
+        message: "no plugin.json at the plugin root; agent-plugins.org requires the manifest at `<root>/plugin.json`"
       });
     }
   }
@@ -15514,7 +15514,7 @@ var skillsDiscovery = {
       if (!entry.hasSkillMd) {
         report({
           file: entry.dir,
-          message: `skills/${entry.name}/ has no SKILL.md \u2014 it is not a skill and agents will ignore it during discovery`
+          message: `skills/${entry.name}/ has no SKILL.md, so it is not a skill and agents will ignore it during discovery`
         });
       }
     }
@@ -15542,7 +15542,7 @@ function checkFieldCoherence(plugin, field, includeMarketplace, consequence, rep
     (d) => `${d.label} declares ${field === "description" ? "its own text" : `\`${d.value}\``}`
   ).join(", ");
   const file = plugin.agentPlugins.exists ? plugin.agentPlugins.path : plugin.root;
-  report({ file, message: `${field} differs across manifests (${listing}) \u2014 ${consequence}` });
+  report({ file, message: `${field} differs across manifests (${listing}): ${consequence}` });
 }
 var manifestCoherence = {
   id: "plugin/manifest-coherence",
@@ -15778,7 +15778,7 @@ function crossDialectConflicts(flat, dialectIds) {
       dialects: [apId, claudeId],
       severity: "warn",
       file: relative(process.cwd(), plugin.root) || ".",
-      message: `this plugin satisfies ${apOk ? apId : claudeId} but not ${apOk ? claudeId : apId} \u2014 the layouts are compatible side by side: ${missing}`
+      message: `this plugin satisfies ${apOk ? apId : claudeId} but not ${apOk ? claudeId : apId}; the layouts are compatible side by side: ${missing}`
     });
   }
   return out;
@@ -15899,7 +15899,7 @@ function reportText(diagnostics, dialectIds) {
 
 // src/main.ts
 var VERSION = "0.3.0";
-var HELP = `askl \u2014 deterministic linter for agent skills and plugins
+var HELP = `askl: a deterministic linter for agent skills and plugins
 
 Usage: askl [options] [paths...]
 
