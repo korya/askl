@@ -1,7 +1,7 @@
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { main } from "../src/main.js";
 import { fixtures } from "./helpers.js";
 
@@ -30,6 +30,13 @@ function cli(args: string[], opts: { cwd?: string } = {}): CliResult {
 }
 
 const fx = (p: string) => join(fixtures, p);
+
+// Tests must behave identically on a dev machine and inside GitHub Actions,
+// where the runner itself sets GITHUB_ACTIONS=true and would flip the default
+// output format. Tests that want Actions behavior stub it to "true" themselves.
+beforeEach(() => {
+  vi.stubEnv("GITHUB_ACTIONS", "false");
+});
 
 afterEach(() => {
   vi.unstubAllEnvs();
