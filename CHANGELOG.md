@@ -18,7 +18,8 @@ No change to any diagnostic.
 
 ### Added
 
-- Releases are cut by pushing a `vX.Y.Z` tag. A workflow verifies the tag against
+- Releases are cut by pushing a `vX.Y.Z` tag. Every effect is idempotent, so a run
+  that fails partway can be re-run once the cause is fixed. A workflow verifies the tag against
   `package.json` and `src/main.ts`, requires a non-empty changelog section, runs
   the full gate, and rebuilds and diffs `dist/` before creating the GitHub release
   from that section, moving the floating major tag, and publishing to npm through

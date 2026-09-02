@@ -76,16 +76,23 @@ jobs:
 
       # ---- effects: ordered by reversibility, npm last because it is forever ----
 
-      - name: Create the GitHub release
+      # Each effect below is idempotent: a run that fails partway can be re-run
+      # once the cause is fixed, without manual cleanup.
+      - name: Create or update the GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.v.outputs.tag }}
           PRERELEASE: ${{ steps.v.outputs.prerelease }}
         run: |
+          flags=()
           if [ "$PRERELEASE" = "true" ]; then
-            gh release create "$TAG" --title "$TAG" --notes-file "$RUNNER_TEMP/notes.md" --prerelease
+            flags+=(--prerelease)
+          fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "release $TAG exists; updating its notes"
+            gh release edit "$TAG" --notes-file "$RUNNER_TEMP/notes.md" "${flags[@]}"
           else
-            gh release create "$TAG" --title "$TAG" --notes-file "$RUNNER_TEMP/notes.md"
+            gh release create "$TAG" --title "$TAG" --notes-file "$RUNNER_TEMP/notes.md" "${flags[@]}"
           fi
 
       - name: Move the floating major tag
@@ -93,6 +100,8 @@ jobs:
         env:
           VERSION: ${{ steps.v.outputs.version }}
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           major="v${VERSION%%.*}"
           git tag -f -a "$major" -m "floating tag for Action consumers (tracks latest ${major}.x)"
           git push -f origin "$major"
@@ -102,7 +111,13 @@ jobs:
       - name: Publish to npm
         env:
           PRERELEASE: ${{ steps.v.outputs.prerelease }}
+          VERSION: ${{ steps.v.outputs.version }}
         run: |
+          name="$(node -p "require('./package.json').name")"
+          if npm view "$name@$VERSION" version >/dev/null 2>&1; then
+            echo "npm already has $name@$VERSION; nothing to publish"
+            exit 0
+          fi
           if [ "$PRERELEASE" = "true" ]; then
             npm publish --tag next
           else
