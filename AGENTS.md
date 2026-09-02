@@ -5,7 +5,8 @@ Deterministic linter for agent skills and plugins. What it must do:
 How it works: [docs/architecture.md](docs/architecture.md) (parse-once engine,
 dialects as frozen data, append-only registry). Why it is this way:
 [docs/decisions.md](docs/decisions.md). What each runtime actually enforces,
-with evidence and re-verification recipes: [docs/dialects.md](docs/dialects.md).
+with evidence and re-verification recipes: [docs/dialects.md](docs/dialects.md). What changed for users, and when:
+[CHANGELOG.md](CHANGELOG.md).
 
 ## Commands
 
@@ -47,6 +48,16 @@ fixtures, never edits to the old ones.
 **Adding a rule or dialect, definition of done:** rule implementation + dialect
 data entry + synthetic fixture(s) + e2e test through the CLI + (if the rule has
 parameter edges no fixture can reach) a unit test — and coverage still at 100%.
+
+**Changelog (hard policy).** Any change that alters what askl flags — a new or
+removed rule, a changed severity or default, an updated vendor fact, a change to
+the CLI or Action surface — adds an entry under `## [Unreleased]` in
+[CHANGELOG.md](CHANGELOG.md) in the same PR. Consumers pin the floating `@v1`
+tag, so these reach their pipelines without them asking; the changelog is how
+they find out why a build went red. A release moves that section under a version
+heading, and `gh release create --notes-file` publishes the same text, so the
+release notes and the changelog cannot drift. Changes that alter no diagnostic
+(toolchain, tests, docs) say so explicitly rather than being omitted.
 
 ## Writing rules
 

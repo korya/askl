@@ -183,7 +183,8 @@ seemingly conflicting layouts side by side.
 
 See [docs/product.md](docs/product.md) for requirements and
 [docs/architecture.md](docs/architecture.md) for how it works (parse-once engine,
-dialects as data, append-only dialect registry).
+dialects as data, append-only dialect registry). [CHANGELOG.md](CHANGELOG.md)
+records what changed for users in each release.
 
 ## License
 
