@@ -43,6 +43,91 @@ skills/examine/SKILL.md
 
 Flags: `--dialect <names>`, `--strict`, `--pedantic`, `--format text|json|sarif|github`.
 
+## Examples
+
+### CI gate: block PRs that break skill compatibility
+
+```yaml
+# .github/workflows/lint-skills.yml
+name: Lint skills
+on: [pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: korya/agent-skills-lint@v0
+```
+
+Violations show up as inline annotations on the PR diff; the job fails on errors and
+passes on warnings (add `strict: "true"` to fail on warnings too).
+
+### Local check while writing a skill
+
+```console
+$ npx agent-skills-lint skills/my-skill
+agent-skills-lint · dialects: agentskills@1.0.0, agent-plugins@1.0.0
+
+skills/my-skill/SKILL.md
+  ✖ [agentskills@1.0.0] skill/name-format  name `My_Skill` is invalid: only lowercase letters, digits and single hyphens are allowed (2:7)
+
+1 error · 0 warnings
+```
+
+Works on any target shape: a single `SKILL.md`, a directory of skills, a plugin, or a
+whole marketplace repo — detection is automatic.
+
+### Cross-runtime compatibility: "I built this for Claude Code — will Codex take it?"
+
+```console
+$ npx agent-skills-lint --dialect claude,codex .
+agent-skills-lint · dialects: claude-code@2026-09, codex@2026-09
+
+skills/easy-speak/SKILL.md
+  ⚠ [codex@2026-09] codex/skill-body-budget  SKILL.md is 11913 bytes — Codex silently truncates skill contents at 8000 bytes on activation; instructions past the cut are lost
+
+0 errors · 1 warning
+```
+
+When layouts genuinely diverge, the union run tells you how to satisfy both sides:
+
+```text
+  ⚠ [agent-plugins@1.0.0, claude-code@2026-09] conflict/dual-layout  this plugin satisfies
+    agent-plugins@1.0.0 but not claude-code@2026-09 — the layouts are compatible side by
+    side: add .claude-plugin/plugin.json or a marketplace entry for Claude Code
+```
+
+### Pre-publish audit before listing in a marketplace
+
+```console
+$ npx agent-skills-lint --strict --pedantic .
+```
+
+`--strict` turns every silent degradation (truncated descriptions, oversized bodies)
+into a blocker; `--pedantic` adds opinion-tier checks like `.agents/skills` copies that
+have drifted from their plugin originals.
+
+### Reproducible CI: pin dialect versions
+
+```json
+{
+  "dialects": ["spec", "claude@2026-09", "codex@2026-09"]
+}
+```
+
+With `agent-skills-lint.config.json` committed, a linter update can never redden your
+pipeline — released dialect versions are frozen, and unpinned runs always print which
+versions they resolved to.
+
+### SARIF into GitHub code scanning
+
+```yaml
+      - run: npx agent-skills-lint --format sarif . > results.sarif
+      - uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+```
+
 ## Dialects
 
 A dialect is what one consumer of your skills enforces, captured as a frozen, versioned
