@@ -1,4 +1,4 @@
-# agent-skills-lint [![CI](https://github.com/korya/agent-skills-lint/actions/workflows/ci.yml/badge.svg)](https://github.com/korya/agent-skills-lint/actions/workflows/ci.yml)
+# agent-skills-lint [![CI](https://github.com/korya/agent-skills-lint/actions/workflows/ci.yml/badge.svg)](https://github.com/korya/agent-skills-lint/actions/workflows/ci.yml) [![Marketplace](https://img.shields.io/github/v/release/korya/agent-skills-lint?label=marketplace&logo=github&color=2ea44f)](https://github.com/marketplace/actions/agent-skills-lint)
 
 Deterministic linter for [agent skills](https://agentskills.io/specification) and
 [agent plugins](https://agent-plugins.org/). Verifies compliance with the open specs and
