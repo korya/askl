@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    # Everything is a devDependency (the published bundle is self-contained),
+    # so batch the noise: one PR for minor+patch, separate PRs only for majors.
+    groups:
+      dev-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
