@@ -39,7 +39,10 @@ what would reopen it.
 7. **Composite Action running committed `dist/`.** Zero runtime dependencies, ~1s
    startup, no registry fetch on every consumer's CI. Cost: `dist/` in git — paid
    for by a CI job that rebuilds and diffs it. Rejected: Docker action (cold-start),
-   npx-in-action (network + supply-chain surface on every run).
+   npx-in-action (network + supply-chain surface on every run). Corollary learned
+   in v0.2.0: the bundle must be fully self-contained (tsup externalizes
+   `dependencies` by default), and only an isolation test — running dist with no
+   node_modules in reach — proves it; `uses: ./` dogfooding cannot.
 
 8. **No tokenizer.** Token-denominated limits are recommendations or approximations
    upstream (Codex itself approximates tokens as bytes/4); chars/lines with headroom

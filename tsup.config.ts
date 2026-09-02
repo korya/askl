@@ -6,5 +6,16 @@ export default defineConfig({
   platform: "node",
   target: "node20",
   clean: true,
-  banner: { js: "#!/usr/bin/env node" },
+  // The createRequire shim lets bundled CJS deps (yaml, ajv) require node builtins
+  // from within the ESM bundle.
+  banner: {
+    js: [
+      "#!/usr/bin/env node",
+      "import { createRequire as __createRequire } from 'node:module';",
+      "const require = __createRequire(import.meta.url);",
+    ].join("\n"),
+  },
+  // The GitHub Action runs dist/cli.js from a bare checkout with no node_modules,
+  // so the bundle must be fully self-contained (tsup externalizes deps by default).
+  noExternal: [/^(yaml|ajv|picocolors)$/, /^ajv\//],
 });

@@ -1,6 +1,6 @@
 {
   "name": "@korya/askl",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Deterministic linter for agent skills and agent plugins: agentskills.io, agent-plugins.org, Claude Code, and Codex compliance.",
   "type": "module",
   "license": "MIT",
@@ -38,18 +38,16 @@
     "check": "npm run typecheck && npm run lint && npm run test",
     "prepublishOnly": "npm run check && npm run build"
   },
-  "dependencies": {
-    "ajv": "^8.17.1",
-    "picocolors": "^1.1.1",
-    "yaml": "^2.8.0"
-  },
   "devDependencies": {
     "@biomejs/biome": "^2.2.0",
     "@types/node": "^24.0.0",
     "@vitest/coverage-v8": "^3.2.7",
     "tsup": "^8.5.0",
     "typescript": "^5.9.0",
-    "vitest": "^3.2.0"
+    "vitest": "^3.2.0",
+    "ajv": "^8.17.1",
+    "picocolors": "^1.1.1",
+    "yaml": "^2.8.0"
   },
   "publishConfig": {
     "access": "public"

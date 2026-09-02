@@ -27,3 +27,10 @@ jobs:
         uses: ./
         with:
           path: test/fixtures/real/toastmasters-mini
+      # `uses: ./` runs from the workspace where node_modules exists and cannot
+      # catch un-bundled dependencies; this can (it is how v0.2.0 broke).
+      - name: Verify dist/ runs with no node_modules in reach
+        run: |
+          cp dist/cli.js "$RUNNER_TEMP/"
+          node "$RUNNER_TEMP/cli.js" --version
+          node "$RUNNER_TEMP/cli.js" test/fixtures/plugins/valid
