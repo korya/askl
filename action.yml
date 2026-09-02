@@ -34,7 +34,15 @@ runs:
       shell: bash
       run: |
         args=(--format github)
-        [ -n "${{ inputs.dialect }}" ] && args+=(--dialect "${{ inputs.dialect }}")
-        [ "${{ inputs.strict }}" = "true" ] && args+=(--strict)
-        [ "${{ inputs.pedantic }}" = "true" ] && args+=(--pedantic)
+        # `[ cond ] && args+=(...)` returns non-zero when the test fails, which
+        # fails the whole step under `bash -e` if it is ever the last line.
+        if [ -n "${{ inputs.dialect }}" ]; then
+          args+=(--dialect "${{ inputs.dialect }}")
+        fi
+        if [ "${{ inputs.strict }}" = "true" ]; then
+          args+=(--strict)
+        fi
+        if [ "${{ inputs.pedantic }}" = "true" ]; then
+          args+=(--pedantic)
+        fi
         node "${{ github.action_path }}/dist/cli.js" "${args[@]}" "${{ inputs.path }}"

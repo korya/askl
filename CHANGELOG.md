@@ -12,6 +12,17 @@ The evidence behind each vendor fact lives in [docs/dialects.md](docs/dialects.m
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-09-02
+
+No change to any diagnostic.
+
+### Fixed
+
+- The Action built its argument list with `[ cond ] && args+=(...)`, which returns
+  non-zero when the condition is false and would fail the step under `bash -e` if it
+  were ever the last line. It survived only by accident of ordering; the conditions
+  are now `if` blocks.
+
 ## [1.0.2] - 2026-09-02
 
 No change to any diagnostic.
@@ -100,7 +111,8 @@ surface, the CLI flags, the Action inputs, and the config schema.
 - Output formats: text, JSON, SARIF, and GitHub annotations.
 - A zero-config GitHub Action and an installation-free CLI.
 
-[unreleased]: https://github.com/korya/askl/compare/v1.0.2...HEAD
+[unreleased]: https://github.com/korya/askl/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/korya/askl/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/korya/askl/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/korya/askl/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/korya/askl/compare/v0.3.0...v1.0.0
