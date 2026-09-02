@@ -24,7 +24,7 @@ works without a config file.
 ## GitHub Action
 
 ```yaml
-- uses: korya/askl@v0
+- uses: korya/askl@v1
 ```
 
 That's it. The action detects what your repo is (a skill, a plugin, a marketplace of
@@ -35,7 +35,7 @@ job on errors.
 Optional inputs mirror the CLI flags:
 
 ```yaml
-- uses: korya/askl@v0
+- uses: korya/askl@v1
   with:
     path: plugins/my-plugin
     dialect: spec,claude,codex   # pin targets explicitly
@@ -79,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: korya/askl@v0
+      - uses: korya/askl@v1
 ```
 
 Violations show up as inline annotations on the PR diff; the job fails on errors and

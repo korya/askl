@@ -15898,7 +15898,7 @@ function reportText(diagnostics, dialectIds) {
 }
 
 // src/main.ts
-var VERSION = "0.3.0";
+var VERSION = "1.0.0";
 var HELP = `askl: a deterministic linter for agent skills and plugins
 
 Usage: askl [options] [paths...]
