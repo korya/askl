@@ -3,7 +3,9 @@
 Deterministic linter for agent skills and plugins. What it must do:
 [docs/product.md](docs/product.md) (requirements have stable IDs — cite them).
 How it works: [docs/architecture.md](docs/architecture.md) (parse-once engine,
-dialects as frozen data, append-only registry).
+dialects as frozen data, append-only registry). Why it is this way:
+[docs/decisions.md](docs/decisions.md). What each runtime actually enforces,
+with evidence and re-verification recipes: [docs/dialects.md](docs/dialects.md).
 
 ## Commands
 
@@ -45,6 +47,20 @@ fixtures, never edits to the old ones.
 **Adding a rule or dialect, definition of done:** rule implementation + dialect
 data entry + synthetic fixture(s) + e2e test through the CLI + (if the rule has
 parameter edges no fixture can reach) a unit test — and coverage still at 100%.
+
+## Writing rules
+
+- **Severity encodes enforcement, never taste** (docs/decisions.md #5): `error` =
+  a runtime rejects it or a spec MUST is violated; `warn` = silent degradation or
+  a spec recommendation; `pedantic: true` = opinion, off by default. A severity
+  claim about a runtime needs a verified fact in docs/dialects.md behind it.
+- **Messages state the consequence and the fix**, not just the violation:
+  "SKILL.md is 11913 bytes — Codex silently truncates skill contents at 8000
+  bytes on activation; instructions past the cut are lost" beats "file too
+  large". Include measured values and limits; carry a `range` whenever the
+  parser can point at the offending value.
+- Rules are dialect-blind: parameters and severity arrive resolved; never branch
+  on a dialect name inside a rule.
 
 ## Conventions
 
