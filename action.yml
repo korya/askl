@@ -1,8 +1,7 @@
 name: agent-skills-lint
 description: >-
-  Deterministic linter for agent skills and agent plugins — agentskills.io,
-  agent-plugins.org, Claude Code, and Codex compliance. Zero-config: detects
-  skills, plugins, and marketplaces, and annotates PR diffs.
+  Deterministic linter for agent skills and plugins — spec, Claude Code, and
+  Codex compliance, with inline PR annotations.
 author: korya
 branding:
   icon: check-circle
