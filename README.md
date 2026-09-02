@@ -7,7 +7,7 @@ incompatibilities in CI, before your users do.
 
 No LLM, no network at lint time, no configuration required.
 
-## GitHub Action (primary use)
+## GitHub Action
 
 ```yaml
 - uses: korya/askl@v0
@@ -29,7 +29,7 @@ Optional inputs mirror the CLI flags:
     pedantic: "true"             # opinion-tier checks
 ```
 
-## CLI (secondary use)
+## CLI
 
 ```console
 $ npx @korya/askl
@@ -41,7 +41,16 @@ skills/examine/SKILL.md
 1 error · 0 warnings
 ```
 
-Flags: `--dialect <names>`, `--strict`, `--pedantic`, `--format text|json|sarif|github`.
+## Options
+
+The CLI flags and the Action inputs share names and meaning:
+
+| Option | What it does |
+|---|---|
+| `--dialect <names>` | Which compliance targets to lint against: `spec`, `agentskills`, `agent-plugins`, `claude`, `codex`, `all`, or a pinned `name@version` (comma-separated). Selecting several means your files must satisfy each of them. Default: the spec dialects, plus Claude Code / Codex automatically when your repo layout shows you target them. |
+| `--strict` | Treat warnings as errors (exit 1). Warnings normally flag silent degradation — a description a runtime truncates, an oversized body; strict mode makes them block. |
+| `--pedantic` | Enable opinion-tier checks that are off by default, such as `.agents/skills` copies drifting out of sync with their plugin originals. |
+| `--format <name>` | Output format: `text` (default in a terminal), `json` (machine-readable), `sarif` (GitHub code scanning), `github` (inline workflow annotations — the default inside GitHub Actions). |
 
 ## Examples
 
